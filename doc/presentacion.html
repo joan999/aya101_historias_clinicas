@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aya-101 · Sustentación</title>
+<style>
+:root {
+  --fondo: #fcfcfb; --texto: #0b0b0b; --texto-2: #52514e; --tarjeta: #ffffff; --borde: #c9c8c2;
+  --zona: #f3f2ee; --azul: #2a78d6; --azul-suave: #e3eefc; --azul-borde: #86b6ef; --naranja: #eb6834;
+  --escala: 1;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: #e7e6e1; color: var(--texto); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+.escenario { position: fixed; inset: 0; }
+.diapo {
+  position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px;
+  transform: translate(-50%, -50%) scale(var(--escala));
+  background: var(--fondo); padding: 52px 72px 64px; display: none; flex-direction: column;
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.12);
+}
+.diapo.actual { display: flex; }
+.diapo > .notas { display: none; }
+.antetitulo { color: var(--azul); font-size: 16px; font-weight: 600; margin: 0 0 6px; }
+h1 { font-size: 52px; line-height: 1.12; margin: 0 0 20px; }
+h2 { font-size: 38px; line-height: 1.15; margin: 0 0 24px; }
+h3 { font-size: 22px; margin: 0 0 10px; }
+p, li { font-size: 23px; line-height: 1.4; }
+p { margin: 0 0 14px; }
+ul, ol { margin: 0; padding-left: 26px; }
+li { margin-bottom: 10px; }
+.chico, .chico li { font-size: 20px; }
+a { color: var(--azul); }
+.nw { white-space: nowrap; }
+.gris { color: var(--texto-2); }
+.azul { color: var(--azul); }
+code, .mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.9em; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+.cols.ancha-izq { grid-template-columns: 1.25fr 1fr; }
+.cols.ancha-der { grid-template-columns: 1fr 1.3fr; }
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 18px 22px; }
+.tarjeta.destacada { background: var(--azul-suave); border-color: var(--azul-borde); }
+.tarjeta p:last-child, .tarjeta ul:last-child { margin-bottom: 0; }
+.cifras { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.cifra { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 16px 18px; }
+.cifra b { display: block; font-size: 44px; line-height: 1.1; }
+.cifra span { color: var(--texto-2); font-size: 17px; }
+.etiquetas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.etiquetas span { background: var(--zona); border: 1px solid var(--borde); border-radius: 999px; padding: 4px 12px; font-size: 17px; }
+table { border-collapse: collapse; width: 100%; font-size: 19px; }
+th { text-align: left; color: var(--texto-2); font-weight: 600; font-size: 16px; border-bottom: 2px solid var(--borde); padding: 6px 10px; }
+td { border-bottom: 1px solid #e2e1dc; padding: 7px 10px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.elegida td { background: var(--azul-suave); font-weight: 600; }
+.flujo { display: flex; align-items: stretch; gap: 10px; }
+.flujo .paso { flex: 1; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; padding: 10px 12px; font-size: 17px; line-height: 1.3; }
+.flujo .paso b { display: block; font-size: 15px; color: var(--azul); margin-bottom: 4px; }
+.flujo .flechita { align-self: center; color: var(--texto-2); font-size: 22px; }
+.prompt { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 15px; line-height: 1.45; white-space: pre-wrap; background: var(--zona); border: 1px solid var(--borde); border-radius: 10px; padding: 14px 16px; margin: 0; }
+figure { margin: 0; }
+figure img { display: block; max-width: 100%; height: auto; border: 1px solid #e2e1dc; border-radius: 6px; }
+figcaption { color: var(--texto-2); font-size: 15px; margin-top: 6px; }
+.formula { white-space: nowrap; font-size: 25px; font-family: "Cambria Math", "Times New Roman", serif; background: var(--zona); border-radius: 10px; padding: 12px 18px; margin: 0 0 16px; }
+.captura-pendiente { border: 2px dashed var(--borde); border-radius: 10px; display: grid; place-items: center; text-align: center; color: var(--texto-2); font-size: 17px; padding: 12px; min-height: 190px; }
+.svg-arq { width: 100%; height: auto; display: block; }
+.svg-arq .caja rect { fill: var(--tarjeta); stroke: var(--borde); stroke-width: 1.2; }
+.svg-arq .bloque rect { fill: var(--azul-suave); stroke: var(--azul-borde); stroke-width: 1.4; }
+.svg-arq .t { fill: var(--texto); font-size: 17px; font-weight: 600; }
+.svg-arq .s { fill: var(--texto-2); font-size: 16px; }
+.svg-arq .a { fill: var(--azul); font-size: 16px; font-weight: 600; }
+.svg-arq .linea { fill: none; stroke: var(--texto-2); stroke-width: 1.6; }
+.svg-arq .linea-azul { fill: none; stroke: var(--azul); stroke-width: 2.6; }
+.pie { position: absolute; left: 72px; right: 72px; bottom: 22px; display: flex; justify-content: space-between; color: var(--texto-2); font-size: 14px; }
+.portada { justify-content: center; }
+.portada .autores { font-size: 24px; margin-top: 28px; }
+.barra { position: fixed; top: 0; left: 0; height: 4px; background: var(--azul); width: 0; transition: width 0.2s; z-index: 5; }
+.panel-notas { position: fixed; left: 0; right: 0; bottom: 0; max-height: 42vh; overflow: auto; background: #1a1a19; color: #f0efec; font-size: 17px; line-height: 1.5; padding: 16px 24px 20px; display: none; z-index: 6; }
+.panel-notas.visible { display: block; }
+.panel-notas h4 { margin: 0 0 6px; font-size: 14px; color: #c3c2b7; font-weight: 600; }
+.panel-notas p { font-size: 17px; margin: 0 0 8px; }
+.ayuda { position: fixed; right: 12px; bottom: 10px; font-size: 12px; color: #6d6c68; z-index: 4; }
+@media (prefers-reduced-motion: reduce) { .barra { transition: none; } }
+@page { size: 1280px 720px; margin: 0; }
+@media print {
+  html, body { overflow: visible; background: none; height: auto; }
+  .escenario { position: static; }
+  .diapo { display: flex !important; position: relative; left: auto; top: auto; transform: none; box-shadow: none; break-after: page; }
+  .barra, .panel-notas, .ayuda { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="barra" id="barra"></div>
+<div class="escenario" id="escenario">
+
+<!-- 1 -->
+<section class="diapo portada" data-titulo="Portada">
+  <p class="antetitulo">Procesamiento de Datos Secuenciales · Trabajo final</p>
+  <h1>Extracción de variables de riesgo cardiovascular con Aya-101</h1>
+  <p class="gris">Un Transformer encoder-decoder aplicado a historias clínicas en español, sin entrenarlo</p>
+  <p class="autores">Grupo 11 · Joan Sebastian Mena Ortega · Jensen Tamayo Merchan</p>
+  <p class="gris chico">Noviembre de 2026</p>
+  <aside class="notas">
+    <p>≈ 0,5 min. Nos presentamos y decimos en una frase qué hicimos: tomamos Aya-101, un modelo encoder-decoder de 13B parámetros ya entrenado, y lo usamos sin entrenarlo para leer historias clínicas y sacar 10 datos del reporte de riesgo cardiovascular.</p>
+    <p>Anunciar el orden: problema, modelo, atención y Q/K/V, demostración, resultados y limitaciones.</p>
+  </aside>
+</section>
+
+<!-- 2 -->
+<section class="diapo" data-titulo="Problema y objetivo">
+  <p class="antetitulo">Contexto</p>
+  <h2>El problema: llenar a mano el reporte de riesgo cardiovascular</h2>
+  <div class="cols ancha-izq">
+    <div>
+      <ul>
+        <li>El personal de salud lee historias clínicas largas, en texto o PDF, para llenar las tablas de la cohorte de riesgo cardiovascular ante la <b>Cuenta de Alto Costo (CAC)</b>.</li>
+        <li>Es lento y deja errores de digitación.</li>
+        <li>Las reglas fijas fallan con abreviaturas («HTA», «DM2»), negaciones («niega diabetes») y contexto («losartán suspendido»).</li>
+      </ul>
+    </div>
+    <div class="tarjeta destacada">
+      <h3>Objetivo</h3>
+      <p class="chico">Extraer 10 variables de una historia clínica con Aya-101, sin entrenarlo, y mostrar cómo entra la información, qué pasa en la atención y qué sale.</p>
+      <div class="etiquetas">
+        <span>Hipertensión</span><span>Diabetes</span><span>Enfermedad renal crónica</span>
+        <span>PA sistólica</span><span>PA diastólica</span><span>Peso</span><span>Talla</span>
+        <span>Creatinina</span><span>HbA1c</span><span>IECA o ARA-II</span>
+      </div>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,5 min. El problema es real: en las IPS alguien tiene que leer cada historia y pasar a una tabla los datos del reporte de la CAC. Con reglas fijas (expresiones regulares) se pierde lo que depende del contexto: si dice «niega diabetes», la palabra diabetes aparece, pero la respuesta es No.</p>
+    <p>Las 10 variables son un subconjunto ilustrativo, sin la numeración oficial de la CAC. Todas las historias del proyecto son sintéticas.</p>
+  </aside>
+</section>
+
+<!-- 3 -->
+<section class="diapo" data-titulo="Artículo base">
+  <p class="antetitulo">Artículo base</p>
+  <h2>Aya-101: mT5 de 13B ajustado con instrucciones en 101 idiomas</h2>
+  <p>Üstün et al., «Aya Model: An Instruction Finetuned Open-Access Multilingual Language Model», <b>ACL 2024</b>, mejor artículo de la conferencia.</p>
+  <div class="cifras" style="margin: 10px 0 22px;">
+    <div class="cifra"><b>13B</b><span>parámetros (mT5-XXL)</span></div>
+    <div class="cifra"><b>101</b><span>idiomas, más de la mitad de bajos recursos</span></div>
+    <div class="cifra"><b>25M</b><span>ejemplos usados de una mezcla de 203M</span></div>
+    <div class="cifra"><b>1024</b><span>tokens de entrada en el ajuste</span></div>
+  </div>
+  <ul class="chico">
+    <li>Pesos abiertos en Hugging Face: <span class="mono">CohereLabs/aya-101</span>, licencia Apache-2.0.</li>
+    <li>El artículo no publica código propio: la inferencia usa la implementación de T5 de la librería transformers.</li>
+    <li>Cumple lo que pide el enunciado: encoder-decoder, de los últimos 3 años, con pesos disponibles y lenguaje como dato secuencial.</li>
+  </ul>
+  <aside class="notas">
+    <p>≈ 0,5 min. Elegimos Aya-101 porque es encoder-decoder, entiende español y tiene los pesos abiertos. Es mT5-XXL, el modelo de Google, ajustado por Cohere con instrucciones en 101 idiomas.</p>
+    <p>El ajuste duró 30.000 pasos, con lote de 256 y entradas y salidas de hasta 1024 tokens, en TPUv4. Frente a mT0x, el mismo modelo base ajustado solo con xP3x, en evaluación humana lo prefieren el 77 % de las veces.</p>
+  </aside>
+</section>
+
+<!-- 4 -->
+<section class="diapo" data-titulo="Arquitectura">
+  <p class="antetitulo">Arquitectura</p>
+  <h2>Encoder-decoder: el encoder lee y el decoder escribe</h2>
+  <figure>
+    <svg class="svg-arq" viewBox="0 0 1150 480" role="img" aria-label="El encoder lee el prompt una vez con 24 bloques de self-attention bidireccional; el decoder escribe token a token con 24 bloques y consulta la salida del encoder mediante la atención cruzada, que recibe K y V del encoder.">
+      <defs>
+        <marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#52514e"/></marker>
+        <marker id="punta-azul" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2a78d6"/></marker>
+      </defs>
+      <!-- Encoder -->
+      <g class="caja"><rect x="20" y="10" width="420" height="46" rx="8"/><text class="t" x="230" y="39" text-anchor="middle">Prompt: instrucción + historia + pregunta</text></g>
+      <path class="linea" d="M230 56 V76" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="20" y="78" width="420" height="46" rx="8"/><text class="t" x="230" y="107" text-anchor="middle">Tokenizador SentencePiece → IDs [1, n]</text></g>
+      <path class="linea" d="M230 124 V144" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="20" y="146" width="420" height="46" rx="8"/><text class="t" x="230" y="175" text-anchor="middle">Embedding → [1, n, 4096]</text></g>
+      <path class="linea" d="M230 192 V212" marker-end="url(#punta)"/>
+      <g class="bloque"><rect x="20" y="214" width="420" height="170" rx="10"/></g>
+      <text class="t" x="40" y="244">Encoder · 24 bloques</text>
+      <text class="s" x="40" y="274">RMSNorm → self-attention bidireccional</text>
+      <text class="s" x="40" y="302">64 cabezas de 64 + sesgo de posición</text>
+      <text class="s" x="40" y="330">RMSNorm → FFN gated-GELU (4096 → 10240)</text>
+      <text class="s" x="40" y="358">conexión residual en cada subcapa</text>
+      <path class="linea" d="M230 384 V404" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="20" y="406" width="420" height="62" rx="8"/><text class="t" x="230" y="432" text-anchor="middle">Salida del encoder → [1, n, 4096]</text><text class="s" x="230" y="456" text-anchor="middle">se calcula una sola vez</text></g>
+      <!-- Decoder -->
+      <g class="caja"><rect x="680" y="10" width="420" height="46" rx="8"/><text class="t" x="890" y="39" text-anchor="middle">Tokens ya escritos (empieza en &lt;pad&gt;)</text></g>
+      <path class="linea" d="M890 56 V76" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="680" y="78" width="420" height="46" rx="8"/><text class="t" x="890" y="107" text-anchor="middle">Embedding → [1, t, 4096]</text></g>
+      <path class="linea" d="M890 124 V144" marker-end="url(#punta)"/>
+      <g class="bloque"><rect x="680" y="146" width="420" height="200" rx="10"/></g>
+      <text class="t" x="700" y="176">Decoder · 24 bloques</text>
+      <text class="s" x="700" y="206">RMSNorm → self-attention con máscara</text>
+      <text class="a" x="700" y="236">RMSNorm → atención cruzada</text>
+      <text class="a" x="700" y="262">Q del decoder · K y V del encoder</text>
+      <text class="s" x="700" y="292">RMSNorm → FFN gated-GELU</text>
+      <text class="s" x="700" y="320">conexión residual en cada subcapa</text>
+      <path class="linea" d="M890 346 V364" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="680" y="366" width="420" height="46" rx="8"/><text class="t" x="890" y="395" text-anchor="middle">lm_head → [1, t, 250.112] puntajes</text></g>
+      <path class="linea" d="M890 412 V428" marker-end="url(#punta)"/>
+      <g class="caja"><rect x="680" y="430" width="420" height="40" rx="8"/><text class="t" x="890" y="456" text-anchor="middle">Greedy: el token más probable</text></g>
+      <!-- Vuelta del token elegido -->
+      <path class="linea" d="M1100 450 H1124 V33 H1104" marker-end="url(#punta)"/>
+      <text class="s" transform="translate(1140 240) rotate(-90)" text-anchor="middle">vuelve a entrar</text>
+      <!-- Atención cruzada -->
+      <path class="linea-azul" d="M440 437 C 565 437, 560 236, 672 236" marker-end="url(#punta-azul)"/>
+      <text class="a" x="585" y="352">K, V</text>
+    </svg>
+    <figcaption>De <span class="mono">config.json</span>: d_model 4096 · 64 cabezas de 64 · d_ff 10240 · vocabulario de 250.112. Pesos publicados: 51,7 GB en fp32. n = tokens del prompt; t = tokens escritos.</figcaption>
+  </figure>
+  <aside class="notas">
+    <p>≈ 1,5 min. Recorrer el dibujo de izquierda a derecha. El encoder lee todo el prompt de una vez y cada token puede mirar a todos los demás (bidireccional). Su salida se calcula una sola vez.</p>
+    <p>El decoder escribe un token por paso. Empieza con el token &lt;pad&gt; y en cada paso le suma el token que acaba de elegir, hasta escribir &lt;/s&gt; o llegar al límite. Cada bloque del decoder tiene tres subcapas: self-attention con máscara (no puede mirar tokens futuros), atención cruzada (mira la historia a través de la salida del encoder) y la FFN.</p>
+    <p>lm_head da un puntaje a cada uno de los 250.112 tokens del vocabulario y con greedy se elige el mayor. Las formas sirven para responder preguntas: el modelo trabaja siempre con vectores de 4096.</p>
+  </aside>
+</section>
+
+<!-- 5 -->
+<section class="diapo" data-titulo="Mecanismo de atención">
+  <p class="antetitulo">Mecanismo de atención</p>
+  <h2>La atención en Aya-101 (T5)</h2>
+  <div class="cols">
+    <div>
+      <p class="gris chico">Transformer original</p>
+      <p class="formula">Atención(Q, K, V) = softmax(QKᵀ / √d<sub>k</sub>) · V</p>
+      <p class="gris chico">En T5, y por lo tanto en Aya-101</p>
+      <p class="formula">Atención(Q, K, V) = softmax(QKᵀ + B) · V</p>
+      <ul class="chico">
+        <li><b>No divide por √d<sub>k</sub></b>: en el código de transformers, <span class="mono nw">scaling = 1.0</span>.</li>
+        <li><b>B es un sesgo de posición relativa</b>: depende solo de la distancia entre dos tokens, con 32 grupos hasta una distancia de 128. Lo calcula la primera capa de cada pila y las demás lo reutilizan.</li>
+        <li>No hay vector de posición sumado al embedding, y en la atención cruzada <b>B = 0</b>.</li>
+      </ul>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Atención</th><th>Q sale de</th><th>K y V salen de</th></tr></thead>
+        <tbody>
+          <tr><td>Self-attention del encoder</td><td>el prompt</td><td>el mismo prompt</td></tr>
+          <tr><td>Self-attention del decoder</td><td>los tokens ya escritos</td><td>los mismos tokens, con máscara</td></tr>
+          <tr class="elegida"><td>Atención cruzada</td><td>el decoder</td><td>la salida del encoder</td></tr>
+        </tbody>
+      </table>
+      <p class="chico" style="margin-top: 18px;">La atención cruzada conecta lo que el decoder va escribiendo con la historia que leyó el encoder. Es la que muestra la app en su sección 4.</p>
+      <p class="chico gris">Multicabeza: la misma cuenta se repite en 64 cabezas con proyecciones distintas y los resultados se unen.</p>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 1,25 min. La atención compara cada consulta (Q) con todas las claves (K); el softmax convierte esos puntajes en pesos que suman 1, y con esos pesos se mezclan los valores (V).</p>
+    <p>Vaswani divide por la raíz de d_k para que los productos no crezcan demasiado. T5 no lo hace: lo vimos en el código (scaling = 1.0). En lugar de sumar un vector de posición, T5 le suma al puntaje un número que depende de la distancia entre los dos tokens; las distancias cortas tienen grupo propio y las largas se agrupan de forma logarítmica. Cada cabeza tiene su propio sesgo.</p>
+    <p>Si preguntan por qué se comparte: el artículo de T5 lo hace por eficiencia, y en el código solo la primera capa de cada pila lo calcula.</p>
+  </aside>
+</section>
+
+<!-- 6 -->
+<section class="diapo" data-titulo="Tensores Q, K y V">
+  <p class="antetitulo">Tensores Q, K y V · caso 1, prompt de 250 tokens</p>
+  <h2>Cómo se generan Q, K y V (encoder, capa 1)</h2>
+  <div class="flujo">
+    <div class="paso"><b>Entrada</b><span class="nw">X = [1, 250, 4096]</span>, ya con RMSNorm</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>Proyecciones</b><span class="nw">Q = X·W<sub>Q</sub></span> <span class="nw">K = X·W<sub>K</sub></span> <span class="nw">V = X·W<sub>V</sub></span></div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>64 cabezas</b>Q, K y V pasan a <span class="nw">[1, 64, 250, 64]</span></div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>Puntajes</b>Q·Kᵀ + B = <span class="nw">[1, 64, 250, 250]</span></div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>Salida</b>softmax · V, se unen las cabezas y pasan por W<sub>O</sub></div>
+  </div>
+  <figure style="margin-top: 16px;">
+    <img src="img/qkv_encoder_capa1.png" alt="Puntajes, sesgo de posición y pesos de la capa 1 del encoder, cabeza 1" style="max-height: 300px;">
+  </figure>
+  <p class="chico" style="margin-top: 12px;">Cabeza 1, «▁Lee» mirando a «▁la»: Q·K = −0,259 · sesgo = −5,000 · <b>puntaje = −5,259</b>. En esta cabeza el sesgo de posición pesa más que el contenido.</p>
+  <aside class="notas">
+    <p>≈ 1,5 min. Estos son tensores reales de Aya-101 en Colab (notebook qkv_colab.ipynb). Cada token entra como un vector de 4096. Tres matrices de pesos distintas lo convierten en su consulta, su clave y su valor. Los 4096 números se parten en 64 cabezas de 64, y cada cabeza calcula su propia matriz de 250 × 250 puntajes.</p>
+    <p>La figura muestra la cabeza 1 en los primeros 60 tokens: los puntajes a la izquierda, el sesgo de posición en el centro y los pesos después del softmax a la derecha. El dibujo de los puntajes es casi el del sesgo, que es muy negativo en la diagonal: esta cabeza casi no mira al propio token ni a sus vecinos.</p>
+    <p>En la atención cruzada cambia de dónde salen: Q viene del decoder, [1, 64, 20, 64] por los 20 tokens que escribió, y K y V del encoder, [1, 64, 250, 64]. La app rehace esta cuenta y la compara con los pesos del modelo: la diferencia máxima fue 2,4e-2 en el encoder y 4,5e-3 en la cruzada, por el redondeo de bf16.</p>
+  </aside>
+</section>
+
+<!-- 7 -->
+<section class="diapo" data-titulo="De la entrada a la salida">
+  <p class="antetitulo">Entrada y salida</p>
+  <h2>De la historia clínica a la tabla</h2>
+  <div class="flujo">
+    <div class="paso"><b>1. Entrada</b>texto, PDF (PyMuPDF) o un ejemplo sintético</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>2. Prompt</b>10 prompts, uno por variable, o 1 prompt que pide JSON</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>3. Tokens</b>SentencePiece; «7,4» es un solo token</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>4. Encoder</b>una sola vez por prompt</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>5. Decoder</b>greedy hasta &lt;/s&gt; o 40 tokens (200 en JSON)</div>
+    <div class="flechita">→</div>
+    <div class="paso"><b>6. Posproceso</b>«Sí», «No», número o vacío</div>
+  </div>
+  <div class="cols ancha-der" style="margin-top: 22px;">
+    <div>
+      <p class="chico"><b>Prompt de una variable</b> (el de la HbA1c del caso 1):</p>
+      <p class="chico gris">La app muestra el prompt completo, la tabla con el valor esperado, la atención cruzada y los tensores Q, K y V.</p>
+      <p class="chico">Diagrama interactivo con los 14 pasos: <a href="diagrama_inferencia.html" target="_blank" rel="noopener">diagrama_inferencia.html</a></p>
+    </div>
+    <pre class="prompt">Lee la historia clínica y responde la pregunta. Responde solo con el número, sin unidades. Si el dato no aparece, responde: No registrado.
+
+Historia clínica:
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+…
+Paraclínicos: creatinina sérica 1,15 mg/dL, HbA1c 7,4 %.
+…
+
+Pregunta: ¿Cuál es el valor de hemoglobina glicosilada (HbA1c) en %?
+Respuesta:</pre>
+  </div>
+  <aside class="notas">
+    <p>≈ 1 min. Esta es la respuesta a «cómo se genera la entrada y la salida final». La historia se convierte en un prompt: la instrucción, la historia y la pregunta. El tokenizador la parte en subpalabras y las cambia por números; en las 15 historias, los prompts por variable miden de 177 a 280 tokens y los de JSON de 450 a 535.</p>
+    <p>El encoder corre una vez y el decoder escribe la respuesta token a token. La salida es texto («El valor de hemoglobina glicosilada (HbA1c) en % es del 7,4 %.») y el posproceso la convierte en el valor 7,4 para la tabla. Si hay tiempo, abrir el diagrama interactivo en el paso que pregunten (#paso-N).</p>
+  </aside>
+</section>
+
+<!-- 8 -->
+<section class="diapo" data-titulo="Innovaciones">
+  <p class="antetitulo">Innovaciones</p>
+  <h2>¿Por qué es innovador?</h2>
+  <div class="cols">
+    <div class="tarjeta destacada">
+      <h3>Lo que aporta Aya-101</h3>
+      <ul class="chico">
+        <li>Ajuste con instrucciones en 101 idiomas, con una mezcla 2,5 veces más grande que xP3.</li>
+        <li>Poda de plantillas de baja calidad: quitó el 19,66 % de los ejemplos en inglés y el 18,25 % de los multilingües.</li>
+        <li>Seguridad multilingüe: según expertos humanos, reduce las respuestas dañinas entre 78 % y 89 %.</li>
+        <li>Evaluación amplia: tareas discriminativas, generativas, abiertas y con personas; lo prefieren el 77 % de las veces frente a mT0 y mT0x.</li>
+      </ul>
+    </div>
+    <div class="tarjeta">
+      <h3>Lo que hereda de T5 y mT5</h3>
+      <ul class="chico">
+        <li>Todo es texto a texto: la instrucción entra como texto y la respuesta sale como texto.</li>
+        <li>Sesgo de posición relativa compartido entre capas, en lugar de vectores de posición.</li>
+        <li>Normalización previa más simple (RMSNorm, sin sesgo).</li>
+        <li>FFN GeGLU (gated-GELU).</li>
+        <li>Vocabulario de 250.000 piezas para 101 idiomas.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,75 min. La innovación de Aya-101 no está en la arquitectura, que es la de mT5, sino en cómo se ajustó: cuántos idiomas cubre, cómo limpiaron los datos y cómo midieron la seguridad en varios idiomas. Frente a mT0x, el mismo modelo base ajustado solo con xP3x, gana en promedio 13,1 % y 11,7 % relativo en los conjuntos de evaluación.</p>
+    <p>De T5 hereda las ideas de arquitectura: el formato texto a texto, el sesgo relativo y la normalización simplificada. Gracias al formato texto a texto y al ajuste con instrucciones, la extracción se hace solo con el texto del prompt.</p>
+  </aside>
+</section>
+
+<!-- 9 -->
+<section class="diapo" data-titulo="Implementación">
+  <p class="antetitulo">Implementación</p>
+  <h2>Un modelo de 51,7 GB en una GPU de 15,6 GB</h2>
+  <div class="cols ancha-izq">
+    <div>
+      <ul class="chico">
+        <li><b>4 bits con bitsandbytes</b> y cálculo en bf16. transformers no cuantiza las capas <span class="mono">wo</span> de la FFN: con fp16 quedarían en fp32 y el modelo no cabría.</li>
+        <li><span class="mono">attn_implementation="eager"</span>: la atención por defecto (<span class="mono">sdpa</span>) no devuelve los pesos que muestra la app.</li>
+        <li>El encoder corre una vez y <span class="mono">generate</span> recibe su salida; después se repite el decoder para guardar la atención.</li>
+        <li>Streamlit en Google Colab con GPU T4, abierto con <span class="mono">cloudflared</span>. El código está en módulos: <span class="mono">app.py</span> y <span class="mono">src/</span> (modelo, prompts, inferencia, posproceso, Q/K/V y métricas).</li>
+      </ul>
+    </div>
+    <div>
+      <div class="cifra" style="margin-bottom: 14px;"><b>13,11 GB</b><span>con el modelo cargado en la T4</span></div>
+      <div class="cifra" style="margin-bottom: 14px;"><b>14,82 GB</b><span>pico durante la evaluación (de 15,6)</span></div>
+      <div class="cifra"><b>14 a 29 min</b><span>para descargar y cargar el modelo</span></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,75 min. En el PC del grupo (GTX 1050 de 4 GB) no cabe, así que todo corre en Colab. En fp32 el modelo pesa 51,7 GB; en 4 bits ocupa 13,11 GB. La estimación por grupos de parámetros daba 12,55 GB; la diferencia son las constantes de escala que bitsandbytes guarda por cada bloque de 64 pesos.</p>
+    <p>Por qué bf16 y no fp16: las capas wo no se cuantizan y, con fp16, transformers las deja en fp32. El margen es corto: en la evaluación el pico llegó a 14,82 GB.</p>
+  </aside>
+</section>
+
+<!-- 10 -->
+<section class="diapo" data-titulo="Demostración">
+  <p class="antetitulo">Demostración</p>
+  <h2>La app en funcionamiento</h2>
+  <div class="etiquetas" style="margin: 0 0 20px;">
+    <span>1. Elegir un ejemplo o subir un PDF</span><span>2. Ejecutar la inferencia</span>
+    <span>3. Tabla y «¿coincide?»</span><span>4. Atención cruzada por capa</span><span>5. Q, K y V de una capa y cabeza</span>
+  </div>
+  <div class="cols" style="grid-template-columns: repeat(3, 1fr); gap: 18px;">
+    <div class="captura-pendiente">Captura: tabla de salida con «¿coincide?»</div>
+    <div class="captura-pendiente">Captura: mapa de atención cruzada</div>
+    <div class="captura-pendiente">Captura: sección de Q, K y V</div>
+  </div>
+  <aside class="notas">
+    <p>≈ 2 min. Abrir la app que se levantó antes con despliegue_colab.ipynb (la carga tarda de 14 a 29 minutos: arrancar Colab unos 40 minutos antes). Sugerencia: caso 1 con «Una pregunta por variable»; mostrar la tabla, luego la atención de la HbA1c en la capa 23 y luego Q, K y V.</p>
+    <p>Si Colab no da GPU o el enlace falla, mostrar estas capturas y los notebooks ejecutados.</p>
+  </aside>
+</section>
+
+<!-- 11 -->
+<section class="diapo" data-titulo="Cómo medimos">
+  <p class="antetitulo">Evaluación</p>
+  <h2>Cómo medimos</h2>
+  <div class="cols">
+    <div>
+      <p><b>15 historias sintéticas × 10 variables = 150 casillas</b> por configuración, cada una con sus valores esperados. Ponen a prueba negaciones, abreviaturas, talla en centímetros, datos ausentes y números que distraen.</p>
+      <p class="chico">Precisión: de los valores que entrega el modelo, cuántos son correctos. Recall: de los datos que tiene la historia, cuántos recupera. F1: la media armónica de los dos.</p>
+      <p class="chico gris">Intervalos del 95 %: Wilson para la exactitud y bootstrap por historias para el F1.</p>
+    </div>
+    <div>
+      <table>
+        <thead><tr><th>Clase</th><th>Qué pasó</th></tr></thead>
+        <tbody>
+          <tr><td>correcto</td><td>coincide con el esperado</td></tr>
+          <tr><td>valor distinto</td><td>dio un valor equivocado</td></tr>
+          <tr><td>omitido</td><td>la historia lo tiene y no lo dio</td></tr>
+          <tr><td>inventado</td><td>dio un valor que la historia no tiene</td></tr>
+        </tbody>
+      </table>
+      <p class="chico" style="margin-top: 16px;">Los ajustes de la corrida 2 se eligieron mirando estas mismas historias: sus cifras son optimistas.</p>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,5 min. Un valor distinto cuenta dos veces: como falso positivo, porque el modelo entregó un valor malo, y como falso negativo, porque no recuperó el bueno. Un inventado es falso positivo y un omitido es falso negativo.</p>
+    <p>El bootstrap remuestrea historias completas (2000 repeticiones) porque las 10 casillas de una historia no son independientes. Con 15 historias los intervalos son anchos; decirlo antes de que lo pregunten.</p>
+  </aside>
+</section>
+
+<!-- 12 -->
+<section class="diapo" data-titulo="Resultados">
+  <p class="antetitulo">Resultados</p>
+  <h2>Dos estrategias y tres ajustes</h2>
+  <table>
+    <thead><tr><th>Corrida</th><th>Configuración</th><th class="num">Exactitud</th><th class="num">F1 (IC 95 %)</th><th class="num">Segundos por historia</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Una pregunta por variable (20 tokens)</td><td class="num">0,693</td><td class="num">0,766 (0,706 a 0,818)</td><td class="num">25,2</td></tr>
+      <tr class="elegida"><td>2</td><td>Por variable · 40 tokens</td><td class="num">0,760</td><td class="num">0,812 (0,762 a 0,856)</td><td class="num">24,5</td></tr>
+      <tr><td>2</td><td>Por variable · 40 tokens · prompt Sí/No</td><td class="num">0,760</td><td class="num">0,806 (0,749 a 0,856)</td><td class="num">25,3</td></tr>
+      <tr><td>1</td><td>Un solo prompt con JSON</td><td class="num">0,540</td><td class="num">0,684 (0,463 a 0,846)</td><td class="num">15,0</td></tr>
+      <tr class="elegida"><td>2</td><td>JSON · sin ciclos</td><td class="num">0,540</td><td class="num">0,684 (0,463 a 0,846)</td><td class="num">11,3</td></tr>
+    </tbody>
+  </table>
+  <div class="cols" style="grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; flex: none;">
+    <div class="tarjeta"><p class="chico"><b>40 tokens:</b> las 10 respuestas de HbA1c ya no se cortan. Toda la mejora del F1 sale de ahí.</p></div>
+    <div class="tarjeta"><p class="chico"><b>Prompt Sí/No:</b> cambió 2 casillas, y las dos empeoraron.</p></div>
+    <div class="tarjeta"><p class="chico"><b>JSON sin ciclos:</b> ningún valor cambia; solo baja el tiempo. Nunca hubo un JSON válido (0 de 15).</p></div>
+  </div>
+  <aside class="notas">
+    <p>≈ 1 min. Las filas resaltadas son la configuración que usa la app. Greedy es determinista: entre las dos sesiones de Colab, 137 de las 150 respuestas por variable salieron idénticas; solo cambiaron las 13 que llegaban al límite de 20 tokens.</p>
+    <p>Antes de esto corregimos un error del lector: tomaba el «1» de «HbA1c» como valor. Con eso y los 40 tokens, el F1 pasó de 0,737 a 0,812. El corte de ciclos usa no_repeat_ngram_size = 10: el decoder no puede repetir un grupo de 10 tokens; con menos se bloqueaban respuestas correctas.</p>
+  </aside>
+</section>
+
+<!-- 13 -->
+<section class="diapo" data-titulo="Por variable">
+  <p class="antetitulo">Análisis por variable</p>
+  <h2>Copia bien los números; falla al interpretar</h2>
+  <div class="cols ancha-der">
+    <table>
+      <thead><tr><th>Variable</th><th class="num">Por variable</th><th class="num">JSON</th></tr></thead>
+      <tbody>
+        <tr><td>PA sistólica</td><td class="num">15 / 15</td><td class="num">9 / 15</td></tr>
+        <tr><td>Peso</td><td class="num">15 / 15</td><td class="num">10 / 15</td></tr>
+        <tr><td>Creatinina</td><td class="num">15 / 15</td><td class="num">9 / 15</td></tr>
+        <tr><td>HbA1c</td><td class="num">15 / 15</td><td class="num">7 / 15</td></tr>
+        <tr><td>Talla</td><td class="num">14 / 15</td><td class="num">10 / 15</td></tr>
+        <tr><td>Hipertensión</td><td class="num">12 / 15</td><td class="num">9 / 15</td></tr>
+        <tr><td>IECA o ARA-II</td><td class="num">10 / 15</td><td class="num">7 / 15</td></tr>
+        <tr><td>Diabetes</td><td class="num">7 / 15</td><td class="num">9 / 15</td></tr>
+        <tr><td>PA diastólica</td><td class="num">6 / 15</td><td class="num">2 / 15</td></tr>
+        <tr><td>Enfermedad renal</td><td class="num">5 / 15</td><td class="num">9 / 15</td></tr>
+      </tbody>
+    </table>
+    <div style="display: grid; gap: 12px; align-content: start;">
+      <div class="tarjeta destacada"><p class="chico"><b>Nunca responde «No»</b> preguntando por variable: 0 de 26. Ante «Niega diabetes» o «Sin enfermedad renal» dice «No registrado» (22) o «Sí» (4).</p></div>
+      <div class="tarjeta"><p class="chico"><b>Diastólica:</b> en 6 historias pone la sistólica y en 3 copia la presión completa («128/78»).</p></div>
+      <div class="tarjeta"><p class="chico"><b>JSON:</b> en 9 historias acierta 79 de 90 (por variable, 69 de 90 en esas mismas); en las otras 6 no escribe ninguna clave.</p></div>
+      <div class="tarjeta"><p class="chico"><b>Errores de sentido:</b> losartán suspendido, amlodipino tomado por IECA o ARA-II, irbesartán no reconocido como ARA-II.</p></div>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 1 min. Configuración de la app: por variable con 40 tokens y JSON sin ciclos. Los números escritos de forma explícita salen bien en las 15 historias. La talla falla una vez porque la historia dice «155 cm» y no convertimos unidades.</p>
+    <p>El hallazgo más importante son las negaciones. Las 34 casillas donde se esperaba «Sí» salen bien, pero ninguna de las 26 con «No». En 21 de las 22 respuestas «No registrado», la historia lo dice de forma explícita. Con JSON sí aparece «No» (16 de 26). El JSON inventó una HbA1c de 7,0 % en dos historias que no la tienen.</p>
+  </aside>
+</section>
+
+<!-- 14 -->
+<section class="diapo" data-titulo="Qué muestra la atención">
+  <p class="antetitulo">Atención cruzada · caso 1, pregunta de HbA1c</p>
+  <h2>El modelo mira el dato correcto, pero escribe otra cosa</h2>
+  <figure>
+    <img src="img/qkv_cruzada_por_capa.png" alt="Peso de atención del primer token de la respuesta sobre 7,4 en cada capa del decoder; el máximo está en la capa 23" style="max-height: 320px;">
+  </figure>
+  <div class="cols" style="margin-top: 16px; flex: none;">
+    <p class="chico">En la <b>capa 23</b>, «▁7,4» es el token más atendido de todo el prompt (0,090), por encima de «▁masculin» (0,058). En las capas 1 a 20 el peso es muy bajo.</p>
+    <div class="tarjeta">
+      <p class="chico">Primer token que elige lm_head: <b>«▁El» 0,553</b> · «▁7,4» 0,181 · «▁7.4» 0,071 · «▁No» 0,062.</p>
+      <p class="chico gris">Con greedy gana «El» y la respuesta repite la pregunta; con 20 tokens se cortaba antes del número.</p>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 1 min. La figura muestra cuánto mira el primer token de la respuesta al token «7,4», capa por capa (promedio de las 64 cabezas). Hasta la capa 20 casi no lo mira; en las últimas cuatro sube y en la 23 es el token más atendido.</p>
+    <p>Aun así, el modelo empieza con «El» (probabilidad 0,553) y escribe «El valor de hemoglobina glicosilada (HbA1c) en % es del 7,4 %». Con 20 tokens esa frase se cortaba antes del número: ese era el error de la corrida 1. Conclusión para la defensa: la atención muestra dónde lee el modelo, no garantiza qué va a escribir.</p>
+  </aside>
+</section>
+
+<!-- 15 -->
+<section class="diapo" data-titulo="Limitaciones">
+  <p class="antetitulo">Limitaciones</p>
+  <h2>Qué limita el resultado</h2>
+  <div class="cols">
+    <div class="tarjeta">
+      <h3>Del modelo</h3>
+      <ul class="chico">
+        <li>13B parámetros: necesita una GPU de unos 15 GB; la carga tarda de 14 a 29 minutos.</li>
+        <li>Se ajustó con entradas de hasta 1024 tokens; una historia real completa puede ser más larga.</li>
+        <li>Sin entrenamiento, no separa la negación de la ausencia y no respeta el formato JSON.</li>
+        <li>Entre 11 y 25 s por historia, según la estrategia.</li>
+      </ul>
+    </div>
+    <div class="tarjeta">
+      <h3>De nuestra evaluación</h3>
+      <ul class="chico">
+        <li>15 historias sintéticas, escritas por nosotros, sin el formato real de una IPS.</li>
+        <li>Intervalos anchos: el F1 del JSON va de 0,463 a 0,846.</li>
+        <li>Los ajustes se eligieron sobre las mismas historias; no hay un conjunto de prueba aparte.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,5 min. Decir las limitaciones sin rodeos; es lo que más preguntan. Sobre el hardware: el pico de memoria deja menos de 1 GB libre en la T4. Sobre los datos: los resultados sirven para comparar configuraciones, no para afirmar cómo funcionaría en una IPS real.</p>
+  </aside>
+</section>
+
+<!-- 16 -->
+<section class="diapo" data-titulo="Conclusiones">
+  <p class="antetitulo">Conclusiones</p>
+  <h2>Qué aprendimos y qué haríamos después</h2>
+  <div class="cols">
+    <div>
+      <h3>Aprendizajes</h3>
+      <ul class="chico">
+        <li>Un encoder-decoder de 13B cabe en una T4 gratuita si se cuantiza con cuidado.</li>
+        <li>Sin entrenamiento, Aya-101 <b>copia bien e interpreta mal</b>.</li>
+        <li>Antes de confiar en una métrica hay que leer las respuestas: el lector y el límite de tokens explicaban parte de los errores.</li>
+        <li>La atención dice dónde lee el modelo, no qué decide.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Posibles mejoras</h3>
+      <ul class="chico">
+        <li>Normalizar «X/Y» y centímetros: corregiría 4 casillas.</li>
+        <li>Fijar el comienzo del JSON o restringir la decodificación a JSON.</li>
+        <li>Combinar las estrategias: JSON cuando escribe claves, por variable cuando no.</li>
+        <li>Preguntar la negación aparte o con ejemplos en el prompt.</li>
+        <li>Ajuste fino (LoRA) y evaluación con historias en formato de IPS.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notas">
+    <p>≈ 0,5 min. Cerrar con la idea central: la mejor configuración acierta el 76,0 % de los valores (F1 = 0,812), con los números explícitos casi perfectos y las negaciones como punto débil. Las mejoras son propuestas: no las probamos.</p>
+  </aside>
+</section>
+
+<!-- 17 -->
+<section class="diapo portada" data-titulo="Preguntas">
+  <h1>Gracias. ¿Preguntas?</h1>
+  <p class="gris">Código, notebooks ejecutados, métricas y bitácora en el repositorio de GitHub del grupo.</p>
+  <div class="chico gris" style="margin-top: 30px;">
+    <p>[1] A. Üstün et al., "Aya model: An instruction finetuned open-access multilingual language model," in <i>Proc. ACL</i>, 2024, pp. 15894–15939.</p>
+    <p>[2] L. Xue et al., "mT5: A massively multilingual pre-trained text-to-text transformer," in <i>Proc. NAACL-HLT</i>, 2021, pp. 483–498.</p>
+    <p>[3] C. Raffel et al., "Exploring the limits of transfer learning with a unified text-to-text transformer," <i>JMLR</i>, vol. 21, no. 140, pp. 1–67, 2020.</p>
+    <p>[4] A. Vaswani et al., "Attention is all you need," in <i>Advances in Neural Information Processing Systems 30</i>, 2017.</p>
+  </div>
+  <aside class="notas">
+    <p>Preguntas probables: por qué T5 no divide por la raíz de d_k; qué es el sesgo relativo; por qué bf16 y no fp16; por qué el modelo no dice «No»; por qué no entrenamos. Las respuestas están en el README (secciones 3, 5 y 6).</p>
+  </aside>
+</section>
+
+</div>
+
+<div class="panel-notas" id="panel-notas" aria-live="polite"></div>
+<div class="ayuda">← → avanzar · N notas · F pantalla completa</div>
+
+<script>
+const diapos = [...document.querySelectorAll(".diapo")];
+const panel = document.getElementById("panel-notas");
+const barra = document.getElementById("barra");
+let actual = 0;
+
+// Cada diapositiva lleva su número y el total en el pie
+diapos.forEach((d, i) => {
+  const pie = document.createElement("div");
+  pie.className = "pie";
+  pie.innerHTML = `<span>Aya-101 · Grupo 11</span><span>${i + 1} / ${diapos.length}</span>`;
+  d.appendChild(pie);
+});
+
+function ajustar() {
+  const escala = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  document.documentElement.style.setProperty("--escala", escala);
+}
+
+function mostrar(i) {
+  actual = Math.max(0, Math.min(diapos.length - 1, i));
+  diapos.forEach((d, k) => d.classList.toggle("actual", k === actual));
+  barra.style.width = `${((actual + 1) / diapos.length) * 100}%`;
+  const notas = diapos[actual].querySelector(".notas");
+  panel.innerHTML = `<h4>Notas · ${actual + 1}. ${diapos[actual].dataset.titulo}</h4>` + (notas ? notas.innerHTML : "");
+  history.replaceState(null, "", `#${actual + 1}`);
+}
+
+const ayuda = document.querySelector(".ayuda");
+document.addEventListener("keydown", (e) => {
+  ayuda.style.display = "none";
+  if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); mostrar(actual + 1); }
+  else if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); mostrar(actual - 1); }
+  else if (e.key === "Home") mostrar(0);
+  else if (e.key === "End") mostrar(diapos.length - 1);
+  else if (e.key.toLowerCase() === "n") panel.classList.toggle("visible");
+  else if (e.key.toLowerCase() === "f") {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  }
+});
+
+// Clic en la diapositiva: avanza (salvo en enlaces)
+document.getElementById("escenario").addEventListener("click", (e) => {
+  ayuda.style.display = "none";
+  if (e.target.closest("a")) return;
+  mostrar(actual + 1);
+});
+
+window.addEventListener("resize", ajustar);
+ajustar();
+mostrar(parseInt(location.hash.slice(1), 10) - 1 || 0);
+</script>
+</body>
+</html>

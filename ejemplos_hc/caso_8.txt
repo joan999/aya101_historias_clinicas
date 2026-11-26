@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Jorge Castillo. CC 00000007. Edad: 74 años. Sexo: masculino.
+Motivo de consulta: control en programa de nefroprotección.
+Antecedentes: HTA, DM2 y ERC estadio 4.
+Examen físico: TA 150/80 mmHg, peso 81 kg, talla 1,70 m.
+Paraclínicos: Cr 2,9 mg/dL, HbA1c 7,9 %.
+Tratamiento actual: irbesartán 150 mg al día, linagliptina 5 mg al día y furosemida 40 mg al día.
+Plan: valoración por nefrología.

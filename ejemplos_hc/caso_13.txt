@@ -1,0 +1,7 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Óscar Medina. CC 00000012. Edad: 57 años. Sexo: masculino.
+AP: HTA (+), DM2 (+), ERC (-).
+EF: TA 138/88, P 84 kg, T 1,71 m.
+Lab: Cr 1,0 mg/dL; HbA1c 8,4 %.
+Tto: lisinopril 20 mg/d, metformina 850 mg c/12 h.
+Plan: control en 3 meses.

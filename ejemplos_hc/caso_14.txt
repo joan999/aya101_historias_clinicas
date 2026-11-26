@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Laura Pardo. CC 00000013. Edad: 45 años. Sexo: femenino.
+Motivo de consulta: control de presión arterial.
+Antecedentes: hipertensión arterial desde hace 3 años. Diabetes gestacional en 2015 que se resolvió después del parto; desde entonces tiene glucemias normales y no tiene diagnóstico de diabetes. Sin enfermedad renal.
+Examen físico: TA 130/84 mmHg, peso 69 kg, talla 1,60 m.
+Paraclínicos: creatinina 0,8 mg/dL, HbA1c 5,8 %.
+Tratamiento actual: losartán 50 mg al día y amlodipino 5 mg al día.
+Plan: control en 6 meses.

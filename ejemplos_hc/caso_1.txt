@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Juan Pérez. CC 00000000. Edad: 62 años. Sexo: masculino.
+Motivo de consulta: control de riesgo cardiovascular.
+Antecedentes: hipertensión arterial diagnosticada en 2018. Diabetes mellitus tipo 2 desde 2020. Niega enfermedad renal conocida.
+Examen físico: TA 138/84 mmHg, FC 76 lpm, peso 76 kg, talla 1,68 m.
+Paraclínicos: creatinina sérica 1,15 mg/dL, HbA1c 7,4 %.
+Tratamiento actual: losartán 50 mg cada 12 horas y metformina 850 mg cada 12 horas.
+Plan: continuar manejo y control en 3 meses.

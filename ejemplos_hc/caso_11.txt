@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Gloria Vargas. CC 00000010. Edad: 66 años. Sexo: femenino.
+Motivo de consulta: control de riesgo cardiovascular.
+Antecedentes: hipertensión arterial y diabetes mellitus tipo 2. Angioedema con enalapril en 2022, por lo que no recibe IECA ni ARA-II. Función renal normal.
+Examen físico: TA 142/84 mmHg, peso 73 kg, talla 1,57 m.
+Paraclínicos: creatinina 0,9 mg/dL, HbA1c 7,1 %.
+Tratamiento actual: metoprolol 50 mg cada 12 horas, hidroclorotiazida 25 mg al día y metformina 1000 mg cada 12 horas.
+Plan: control en 3 meses.

@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Héctor Gil. CC 00000011. Edad: 81 años. Sexo: masculino.
+Motivo de consulta: control domiciliario.
+Antecedentes: HTA y enfermedad renal crónica estadio 3a. No tiene diabetes.
+Examen físico: TA 136/76 mmHg. No se pesó ni se midió la talla porque no puede ponerse de pie.
+Paraclínicos: creatinina 1,5 mg/dL, HbA1c 5,9 %.
+Tratamiento actual: telmisartán 40 mg al día.
+Plan: visita en 1 mes.

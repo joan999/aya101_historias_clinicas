@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Andrés López. CC 00000004. Edad: 24 años. Sexo: masculino.
+Motivo de consulta: control de diabetes.
+Antecedentes: DM1 diagnosticada a los 12 años. Sin hipertensión ni enfermedad renal.
+Examen físico: PA 118/72 mmHg, peso 70 kg, talla 1,78 m.
+Paraclínicos: creatinina 0,8 mg/dL, A1c 9,2 %.
+Tratamiento actual: insulina glargina 24 UI en la noche e insulina asparta con las comidas.
+Plan: educación en conteo de carbohidratos.

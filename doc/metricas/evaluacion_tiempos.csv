@@ -1,0 +1,31 @@
+caso,estrategia,segundos,json_valido
+caso_1.txt,Una pregunta por variable,30.505173444747925,
+caso_1.txt,Un solo prompt con JSON,21.985480308532715,False
+caso_2.txt,Una pregunta por variable,26.123937845230103,
+caso_2.txt,Un solo prompt con JSON,10.818681001663208,False
+caso_3.txt,Una pregunta por variable,26.48511838912964,
+caso_3.txt,Un solo prompt con JSON,22.196782112121582,False
+caso_4.txt,Una pregunta por variable,25.380367517471313,
+caso_4.txt,Un solo prompt con JSON,21.47250461578369,False
+caso_5.txt,Una pregunta por variable,24.628472089767456,
+caso_5.txt,Un solo prompt con JSON,10.42841100692749,False
+caso_6.txt,Una pregunta por variable,24.012994289398193,
+caso_6.txt,Un solo prompt con JSON,9.976189851760864,False
+caso_7.txt,Una pregunta por variable,22.539024591445923,
+caso_7.txt,Un solo prompt con JSON,11.315373182296753,False
+caso_8.txt,Una pregunta por variable,24.955559492111206,
+caso_8.txt,Un solo prompt con JSON,10.092655181884766,False
+caso_9.txt,Una pregunta por variable,22.716917991638184,
+caso_9.txt,Un solo prompt con JSON,21.50852084159851,False
+caso_10.txt,Una pregunta por variable,22.33383536338806,
+caso_10.txt,Un solo prompt con JSON,10.478852272033691,False
+caso_11.txt,Una pregunta por variable,27.01970887184143,
+caso_11.txt,Un solo prompt con JSON,10.739059925079346,False
+caso_12.txt,Una pregunta por variable,24.24818444252014,
+caso_12.txt,Un solo prompt con JSON,21.769076347351074,False
+caso_13.txt,Una pregunta por variable,22.311073541641235,
+caso_13.txt,Un solo prompt con JSON,9.482100248336792,False
+caso_14.txt,Una pregunta por variable,26.458977699279785,
+caso_14.txt,Un solo prompt con JSON,10.703275203704834,False
+caso_15.txt,Una pregunta por variable,27.801095247268677,
+caso_15.txt,Un solo prompt con JSON,21.7919180393219,False

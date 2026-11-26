@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Carlos Ruiz. CC 00000002. Edad: 70 años. Sexo: masculino.
+Motivo de consulta: control de diabetes y función renal.
+Antecedentes: diabetes mellitus tipo 2 de 15 años de evolución. Enfermedad renal crónica estadio 3a. Se descartó hipertensión arterial con monitoreo ambulatorio.
+Examen físico: TA 128/78 mmHg, peso 68 kg, talla 1,72 m.
+Paraclínicos: creatinina 1,6 mg/dL, HbA1c 8,1 %.
+Tratamiento actual: insulina glargina 20 UI en la noche y empagliflozina 10 mg al día. Losartán suspendido hace 2 meses por hiperpotasemia.
+Plan: control por nefrología en 1 mes.

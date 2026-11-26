@@ -1,0 +1,17 @@
+{
+  "caso_1.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "Sí", "diagnostico_erc": "No", "tas_mmhg": 138, "tad_mmhg": 84, "peso_kg": 76, "talla_m": 1.68, "creatinina_mg_dl": 1.15, "hba1c_pct": 7.4, "usa_ieca_ara2": "Sí"},
+  "caso_2.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 152, "tad_mmhg": 96, "peso_kg": 82, "talla_m": 1.6, "creatinina_mg_dl": 0.9, "hba1c_pct": null, "usa_ieca_ara2": "Sí"},
+  "caso_3.txt": {"diagnostico_hta": "No", "diagnostico_dm": "Sí", "diagnostico_erc": "Sí", "tas_mmhg": 128, "tad_mmhg": 78, "peso_kg": 68, "talla_m": 1.72, "creatinina_mg_dl": 1.6, "hba1c_pct": 8.1, "usa_ieca_ara2": "No"},
+  "caso_4.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "Sí", "tas_mmhg": 146, "tad_mmhg": 88, "peso_kg": 64, "talla_m": 1.55, "creatinina_mg_dl": 1.8, "hba1c_pct": 5.6, "usa_ieca_ara2": "Sí"},
+  "caso_5.txt": {"diagnostico_hta": "No", "diagnostico_dm": "Sí", "diagnostico_erc": "No", "tas_mmhg": 118, "tad_mmhg": 72, "peso_kg": 70, "talla_m": 1.78, "creatinina_mg_dl": 0.8, "hba1c_pct": 9.2, "usa_ieca_ara2": "No"},
+  "caso_6.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 134, "tad_mmhg": 86, "peso_kg": 91, "talla_m": 1.74, "creatinina_mg_dl": 1.05, "hba1c_pct": 6.1, "usa_ieca_ara2": "Sí"},
+  "caso_7.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 158, "tad_mmhg": 94, "peso_kg": 77, "talla_m": 1.62, "creatinina_mg_dl": null, "hba1c_pct": null, "usa_ieca_ara2": "No"},
+  "caso_8.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "Sí", "diagnostico_erc": "Sí", "tas_mmhg": 150, "tad_mmhg": 80, "peso_kg": 81, "talla_m": 1.7, "creatinina_mg_dl": 2.9, "hba1c_pct": 7.9, "usa_ieca_ara2": "Sí"},
+  "caso_9.txt": {"diagnostico_hta": "No", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 112, "tad_mmhg": 70, "peso_kg": 58, "talla_m": 1.65, "creatinina_mg_dl": 0.7, "hba1c_pct": 5.2, "usa_ieca_ara2": "No"},
+  "caso_10.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 128, "tad_mmhg": 82, "peso_kg": 95, "talla_m": 1.8, "creatinina_mg_dl": 1.1, "hba1c_pct": null, "usa_ieca_ara2": "Sí"},
+  "caso_11.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "Sí", "diagnostico_erc": "No", "tas_mmhg": 142, "tad_mmhg": 84, "peso_kg": 73, "talla_m": 1.57, "creatinina_mg_dl": 0.9, "hba1c_pct": 7.1, "usa_ieca_ara2": "No"},
+  "caso_12.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "Sí", "tas_mmhg": 136, "tad_mmhg": 76, "peso_kg": null, "talla_m": null, "creatinina_mg_dl": 1.5, "hba1c_pct": 5.9, "usa_ieca_ara2": "Sí"},
+  "caso_13.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "Sí", "diagnostico_erc": "No", "tas_mmhg": 138, "tad_mmhg": 88, "peso_kg": 84, "talla_m": 1.71, "creatinina_mg_dl": 1.0, "hba1c_pct": 8.4, "usa_ieca_ara2": "Sí"},
+  "caso_14.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "No", "diagnostico_erc": "No", "tas_mmhg": 130, "tad_mmhg": 84, "peso_kg": 69, "talla_m": 1.6, "creatinina_mg_dl": 0.8, "hba1c_pct": 5.8, "usa_ieca_ara2": "Sí"},
+  "caso_15.txt": {"diagnostico_hta": "Sí", "diagnostico_dm": "Sí", "diagnostico_erc": "Sí", "tas_mmhg": 164, "tad_mmhg": 98, "peso_kg": 88, "talla_m": 1.69, "creatinina_mg_dl": 1.4, "hba1c_pct": 8.8, "usa_ieca_ara2": "Sí"}
+}

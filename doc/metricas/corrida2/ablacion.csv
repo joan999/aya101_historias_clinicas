@@ -1,0 +1,6 @@
+corrida,configuración,exactitud,IC 95 % exactitud,precisión,recall,F1,IC 95 % F1,n_omitido,n_inventado,n_valor distinto,al_limite
+Corrida 1,Una pregunta por variable,0.693,0.615 – 0.762,0.875,0.681,0.766,0.706 – 0.818,32,0,14,13.0
+Corrida 2,Por variable · 40 tokens,0.76,0.686 – 0.821,0.885,0.75,0.812,0.762 – 0.856,22,0,14,0.0
+Corrida 2,Por variable · 40 tokens · prompt Sí/No,0.76,0.686 – 0.821,0.871,0.75,0.806,0.749 – 0.856,20,0,16,0.0
+Corrida 1,Un solo prompt con JSON,0.54,0.460 – 0.618,0.951,0.535,0.684,0.463 – 0.846,65,2,2,6.0
+Corrida 2,JSON · sin ciclos,0.54,0.460 – 0.618,0.951,0.535,0.684,0.463 – 0.846,65,2,2,0.0

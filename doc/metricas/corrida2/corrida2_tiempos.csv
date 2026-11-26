@@ -1,0 +1,46 @@
+caso,estrategia,segundos,json_valido,al_limite
+caso_1.txt,Por variable · 40 tokens,28.61317801475525,,0
+caso_1.txt,Por variable · 40 tokens · prompt Sí/No,26.538676023483276,,0
+caso_1.txt,JSON · sin ciclos,7.229484558105469,False,0
+caso_2.txt,Por variable · 40 tokens,22.512858390808105,,0
+caso_2.txt,Por variable · 40 tokens · prompt Sí/No,22.490951776504517,,0
+caso_2.txt,JSON · sin ciclos,9.749448299407959,False,0
+caso_3.txt,Por variable · 40 tokens,26.961592435836792,,0
+caso_3.txt,Por variable · 40 tokens · prompt Sí/No,27.923906087875366,,0
+caso_3.txt,JSON · sin ciclos,20.211105585098267,False,0
+caso_4.txt,Por variable · 40 tokens,24.629276752471924,,0
+caso_4.txt,Por variable · 40 tokens · prompt Sí/No,26.091700792312622,,0
+caso_4.txt,JSON · sin ciclos,13.08928656578064,False,0
+caso_5.txt,Por variable · 40 tokens,24.336287021636963,,0
+caso_5.txt,Por variable · 40 tokens · prompt Sí/No,25.53892755508423,,0
+caso_5.txt,JSON · sin ciclos,10.12808609008789,False,0
+caso_6.txt,Por variable · 40 tokens,21.670738220214844,,0
+caso_6.txt,Por variable · 40 tokens · prompt Sí/No,22.664785146713257,,0
+caso_6.txt,JSON · sin ciclos,9.166946172714233,False,0
+caso_7.txt,Por variable · 40 tokens,20.38808536529541,,0
+caso_7.txt,Por variable · 40 tokens · prompt Sí/No,21.5173180103302,,0
+caso_7.txt,JSON · sin ciclos,10.830830812454224,False,0
+caso_8.txt,Por variable · 40 tokens,29.06136393547058,,0
+caso_8.txt,Por variable · 40 tokens · prompt Sí/No,30.176949501037598,,0
+caso_8.txt,JSON · sin ciclos,9.588868141174316,False,0
+caso_9.txt,Por variable · 40 tokens,22.65216064453125,,0
+caso_9.txt,Por variable · 40 tokens · prompt Sí/No,23.686787843704224,,0
+caso_9.txt,JSON · sin ciclos,20.236451387405396,False,0
+caso_10.txt,Por variable · 40 tokens,20.158074617385864,,0
+caso_10.txt,Por variable · 40 tokens · prompt Sí/No,21.146077156066895,,0
+caso_10.txt,JSON · sin ciclos,10.215320587158203,False,0
+caso_11.txt,Por variable · 40 tokens,26.24933648109436,,0
+caso_11.txt,Por variable · 40 tokens · prompt Sí/No,27.25921940803528,,0
+caso_11.txt,JSON · sin ciclos,10.44049620628357,False,0
+caso_12.txt,Por variable · 40 tokens,24.66208004951477,,0
+caso_12.txt,Por variable · 40 tokens · prompt Sí/No,25.795902252197266,,0
+caso_12.txt,JSON · sin ciclos,13.012412071228027,False,0
+caso_13.txt,Por variable · 40 tokens,22.180551528930664,,0
+caso_13.txt,Por variable · 40 tokens · prompt Sí/No,23.237260103225708,,0
+caso_13.txt,JSON · sin ciclos,8.819536924362183,False,0
+caso_14.txt,Por variable · 40 tokens,26.555559873580933,,0
+caso_14.txt,Por variable · 40 tokens · prompt Sí/No,26.944519996643066,,0
+caso_14.txt,JSON · sin ciclos,10.016302347183228,False,0
+caso_15.txt,Por variable · 40 tokens,26.97191023826599,,0
+caso_15.txt,Por variable · 40 tokens · prompt Sí/No,28.054354667663574,,0
+caso_15.txt,JSON · sin ciclos,6.986746788024902,False,0

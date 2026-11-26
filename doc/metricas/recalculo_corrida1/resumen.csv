@@ -1,0 +1,3 @@
+estrategia,aciertos,total,exactitud,IC 95 % exactitud,VP,FP,FN,precisión,recall,F1,IC 95 % F1,n_correcto,n_valor distinto,n_omitido,n_inventado
+Una pregunta por variable,104,150,0.693,0.615 – 0.762,98,14,46,0.875,0.681,0.766,0.706 – 0.818,104,14,32,0
+Un solo prompt con JSON,81,150,0.54,0.460 – 0.618,77,4,67,0.951,0.535,0.684,0.463 – 0.846,81,2,65,2

@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Luis Fernández. CC 00000005. Edad: 49 años. Sexo: masculino.
+Motivo de consulta: control de presión arterial.
+Antecedentes: hipertensión arterial desde 2021. Prediabetes en seguimiento, sin diagnóstico de diabetes. Madre con diabetes mellitus tipo 2. Niega enfermedad renal.
+Examen físico: TA 134/86 mmHg, peso 91 kg, talla 1.74 m.
+Paraclínicos: creatinina 1.05 mg/dL, HbA1c 6.1 %.
+Tratamiento actual: valsartán 160 mg al día.
+Plan: dieta, ejercicio y control de HbA1c en 6 meses.

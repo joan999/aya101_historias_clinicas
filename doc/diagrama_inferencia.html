@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flujo de inferencia Aya-101</title>
+<style>
+:root {
+  --fondo: #fcfcfb; --texto: #0b0b0b; --texto-2: #52514e; --tarjeta: #ffffff; --borde: #c9c8c2;
+  --zona: #f3f2ee; --zona-borde: #b9b8b1; --gpu: #eef4fc; --acento: #2a78d6; --acento-suave: #cde2fb;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #1a1a19; --texto: #f0efec; --texto-2: #c3c2b7; --tarjeta: #242423; --borde: #4a4a46;
+    --zona: #20201f; --zona-borde: #55554f; --gpu: #1b2533; --acento: #3987e5; --acento-suave: #1c3a5f;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #1a1a19; --texto: #f0efec; --texto-2: #c3c2b7; --tarjeta: #242423; --borde: #4a4a46;
+  --zona: #20201f; --zona-borde: #55554f; --gpu: #1b2533; --acento: #3987e5; --acento-suave: #1c3a5f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1440px; margin: 0 auto; padding: 24px 16px 40px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.bajada { color: var(--texto-2); margin: 0 0 16px; max-width: 900px; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+button { font: inherit; color: var(--texto); background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--acento); }
+button[aria-pressed="true"] { background: var(--acento-suave); border-color: var(--acento); }
+.contador { color: var(--texto-2); margin-left: 4px; }
+.lienzo { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .lienzo { grid-template-columns: 1fr; } }
+figure { margin: 0; overflow-x: auto; }
+figure svg { display: block; width: 100%; min-width: 900px; height: auto; color: var(--texto); }
+figcaption { color: var(--texto-2); font-size: 13px; margin-top: 8px; }
+.zona rect { fill: var(--zona); stroke: var(--zona-borde); stroke-dasharray: 6 5; }
+.zona-gpu rect { fill: var(--gpu); }
+.subzona rect { fill: none; stroke: var(--zona-borde); stroke-dasharray: 3 4; }
+.zona text, .subzona text { fill: var(--texto-2); font-size: 12px; font-weight: 600; }
+.flecha path { fill: none; stroke: var(--texto-2); stroke-width: 1.6; }
+.flecha.discontinua path { stroke-dasharray: 5 4; }
+.flecha text { fill: var(--texto-2); font-size: 11px; paint-order: stroke; stroke: var(--fondo); stroke-width: 4px; stroke-linejoin: round; }
+.flecha.activa path { stroke: var(--acento); stroke-width: 2.4; }
+.flecha.activa text { fill: var(--acento); font-weight: 600; }
+.punta-activa { fill: var(--acento); }
+.nodo { cursor: pointer; outline: none; }
+.nodo rect { fill: var(--tarjeta); stroke: var(--borde); stroke-width: 1.2; }
+.nodo .icono { fill: none; stroke: var(--texto-2); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.nodo .icono .relleno { fill: var(--texto-2); stroke: none; }
+.nodo .titulo { fill: var(--texto); font-size: 13px; font-weight: 600; }
+.nodo .sub { fill: var(--texto-2); font-size: 11px; }
+.nodo:hover rect, .nodo:focus-visible rect { stroke: var(--acento); }
+.nodo.actual rect { stroke: var(--acento); stroke-width: 2.6; fill: var(--acento-suave); }
+.recorrido .nodo:not(.visto):not(.actual), .recorrido .flecha:not(.vista):not(.activa) { opacity: 0.28; }
+.punto { fill: var(--acento); display: none; }
+.animado .punto { display: inline; }
+.detalle { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 16px; position: sticky; top: 16px; }
+.detalle h2 { font-size: 17px; margin: 0 0 8px; }
+.detalle p { margin: 0 0 12px; }
+.detalle dl { margin: 0; display: grid; grid-template-columns: 1fr; gap: 2px 0; }
+.detalle dt { color: var(--texto-2); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-top: 8px; }
+.detalle dd { margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.detalle code { font-size: 13px; }
+.pie { color: var(--texto-2); font-size: 12px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Flujo de inferencia de Aya-101</h1>
+<p class="bajada">Cómo viaja una historia clínica por el sistema hasta la tabla de variables de riesgo cardiovascular. Haz clic en un paso para ver qué hace, en qué archivo está y qué forma tiene el tensor, o usa «Siguiente» para recorrerlo en orden.</p>
+<div class="controles">
+  <button id="anterior" type="button">◀ Anterior</button>
+  <button id="siguiente" type="button">Siguiente ▶</button>
+  <button id="todo" type="button">Ver todo</button>
+  <button id="animar" type="button" aria-pressed="false">Animar flujo</button>
+  <span class="contador" id="contador" aria-live="polite"></span>
+</div>
+<div class="lienzo">
+  <figure id="figura">
+    <svg viewBox="0 0 1320 600" role="img" aria-label="Flujo de inferencia de Aya-101: la historia clínica se convierte en prompt y tokens, el encoder la lee una vez y el decoder genera la respuesta token por token consultando la salida del encoder con la atención cruzada; el texto se convierte en una tabla de 10 variables."><defs><marker id="punta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker><marker id="punta-activa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="punta-activa"/></marker></defs><g class="zona"><rect x="16" y="40" width="170" height="544" rx="14"/><text x="28" y="60">Navegador · app Streamlit</text></g><g class="zona"><rect x="202" y="40" width="180" height="544" rx="14"/><text x="214" y="60">Preprocesamiento · CPU</text></g><g class="zona zona-gpu"><rect x="398" y="40" width="680" height="544" rx="14"/><text x="410" y="60">Google Colab · GPU T4 · Aya-101 en 4 bits</text></g><g class="subzona"><rect x="414" y="82" width="648" height="150" rx="14"/><text x="426" y="102">Encoder · 24 bloques · lee el prompt una vez</text></g><g class="subzona"><rect x="414" y="272" width="648" height="296" rx="14"/><text x="426" y="292">Decoder · 24 bloques · un token por paso</text></g><g class="zona"><rect x="1094" y="40" width="210" height="360" rx="14"/><text x="1106" y="60">Salida · app Streamlit</text></g><g class="zona"><rect x="1094" y="420" width="210" height="164" rx="14"/><text x="1106" y="440">Posproceso · CPU</text></g><g class="flecha" id="g-e_pdf"><path id="e_pdf" d="M101,268 V152 H211" marker-end="url(#punta)"/><text x="107" y="214" text-anchor="start">si es PDF</text></g><g class="flecha" id="g-e_texto"><path id="e_texto" d="M171,306 H211" marker-end="url(#punta)"/><text x="194" y="297" text-anchor="middle">texto</text></g><g class="flecha" id="g-e_pdf_prompt"><path id="e_pdf_prompt" d="M292,184 V262" marker-end="url(#punta)"/><text x="298" y="228" text-anchor="start">texto</text></g><g class="flecha" id="g-e_prompt"><path id="e_prompt" d="M292,344 V424" marker-end="url(#punta)"/><text x="298" y="389" text-anchor="start">prompt</text></g><g class="flecha" id="g-e_ids"><path id="e_ids" d="M367,468 H404 V158 H428" marker-end="url(#punta)"/><text x="385" y="460" text-anchor="middle">IDs</text></g><g class="flecha" id="g-e_embed"><path id="e_embed" d="M584,158 H628" marker-end="url(#punta)"/></g><g class="flecha" id="g-e_enc"><path id="e_enc" d="M814,158 H858" marker-end="url(#punta)"/></g><g class="flecha" id="g-e_kv"><path id="e_kv" d="M953,196 V324" marker-end="url(#punta)"/><text x="960" y="262" text-anchor="start">K, V</text></g><g class="flecha" id="g-e_dec"><path id="e_dec" d="M594,368 H628" marker-end="url(#punta)"/></g><g class="flecha" id="g-e_q"><path id="e_q" d="M814,368 H858" marker-end="url(#punta)"/><text x="836" y="360" text-anchor="middle">Q</text></g><g class="flecha" id="g-e_bloques"><path id="e_bloques" d="M953,406 V462" marker-end="url(#punta)"/><text x="960" y="440" text-anchor="start">tras 24 bloques</text></g><g class="flecha" id="g-e_vuelta"><path id="e_vuelta" d="M864,520 H514 V412" marker-end="url(#punta)"/><text x="690" y="512" text-anchor="middle">el token elegido vuelve a entrar</text></g><g class="flecha" id="g-e_salida"><path id="e_salida" d="M1042,506 H1103" marker-end="url(#punta)"/><text x="1060" y="497" text-anchor="middle">texto</text></g><g class="flecha" id="g-e_valores"><path id="e_valores" d="M1249,468 V332" marker-end="url(#punta)"/><text x="1255" y="413" text-anchor="start">valores</text></g><g class="flecha discontinua" id="g-e_captura"><path id="e_captura" d="M1042,350 H1078 V134 H1103" marker-end="url(#punta)"/><text x="1086" y="245" text-anchor="middle" transform="rotate(-90 1086 245)">pesos, Q, K, V</text></g><g class="nodo" id="n-historia" data-nodo="historia" tabindex="0" role="button" aria-label="Historia clínica"><rect x="31" y="268" width="140" height="76" rx="10"/><g class="icono" transform="translate(43 281)"><path d="M3 1h8l4 4v12H3z M11 1v4h4" /></g><text class="titulo" x="69" y="295">Historia clínica</text><text class="sub" x="43" y="322">texto, PDF o ejemplo</text></g><g class="nodo" id="n-pdf" data-nodo="pdf" tabindex="0" role="button" aria-label="PyMuPDF"><rect x="217" y="120" width="150" height="64" rx="10"/><g class="icono" transform="translate(229 133)"><path d="M3 1h8l4 4v12H3z M6 10h6 M6 13h4" /></g><text class="titulo" x="255" y="147">PyMuPDF</text><text class="sub" x="229" y="174">solo si es PDF</text></g><g class="nodo" id="n-prompt" data-nodo="prompt" tabindex="0" role="button" aria-label="Prompt"><rect x="217" y="268" width="150" height="76" rx="10"/><g class="icono" transform="translate(229 281)"><path d="M2 4h14 M2 8h14 M2 12h9 M2 16h11" /></g><text class="titulo" x="255" y="295">Prompt</text><text class="sub" x="229" y="322">instrucción + historia</text></g><g class="nodo" id="n-tokens" data-nodo="tokens" tabindex="0" role="button" aria-label="Tokenizador"><rect x="217" y="430" width="150" height="76" rx="10"/><g class="icono" transform="translate(229 443)"><rect x="1" y="5" width="5" height="8" rx="1"/><rect x="7" y="5" width="4" height="8" rx="1"/><rect x="12" y="5" width="5" height="8" rx="1"/></g><text class="titulo" x="255" y="457">Tokenizador</text><text class="sub" x="229" y="484">SentencePiece · [1, n]</text></g><g class="nodo" id="n-embed" data-nodo="embed" tabindex="0" role="button" aria-label="Embeddings"><rect x="434" y="120" width="150" height="76" rx="10"/><g class="icono" transform="translate(446 133)"><path d="M2 2h14v14H2z M2 7h14 M2 12h14 M7 2v14 M12 2v14" /></g><text class="titulo" x="472" y="147">Embeddings</text><text class="sub" x="446" y="174">[1, n, 4096]</text></g><g class="nodo" id="n-encoder" data-nodo="encoder" tabindex="0" role="button" aria-label="Bloque encoder ×24"><rect x="634" y="120" width="180" height="76" rx="10"/><g class="icono" transform="translate(646 133)"><path d="M9 2l7 4-7 4-7-4z M2 10l7 4 7-4 M2 13l7 4 7-4" /></g><text class="titulo" x="672" y="147">Bloque encoder ×24</text><text class="sub" x="646" y="174">self-attention + FFN</text></g><g class="nodo" id="n-salida_enc" data-nodo="salida_enc" tabindex="0" role="button" aria-label="Salida del encoder"><rect x="864" y="120" width="178" height="76" rx="10"/><g class="icono" transform="translate(876 133)"><path d="M9 2l7 4-7 4-7-4z M2 10l7 4 7-4 M2 13l7 4 7-4" /></g><text class="titulo" x="902" y="147">Salida del encoder</text><text class="sub" x="876" y="174">[1, n, 4096] · una vez</text></g><g class="nodo" id="n-entrada_dec" data-nodo="entrada_dec" tabindex="0" role="button" aria-label="Entrada decoder"><rect x="434" y="330" width="160" height="76" rx="10"/><g class="icono" transform="translate(446 343)"><rect x="1" y="5" width="5" height="8" rx="1"/><rect x="7" y="5" width="4" height="8" rx="1"/><rect x="12" y="5" width="5" height="8" rx="1"/></g><text class="titulo" x="472" y="357">Entrada decoder</text><text class="sub" x="446" y="384">&lt;pad&gt; + generados · [1, t]</text></g><g class="nodo" id="n-self_dec" data-nodo="self_dec" tabindex="0" role="button" aria-label="Self-attention"><rect x="634" y="330" width="180" height="76" rx="10"/><g class="icono" transform="translate(646 343)"><circle cx="4" cy="5" r="2"/><circle cx="4" cy="13" r="2"/><circle cx="14" cy="9" r="2"/><path d="M6 5l6 3.5 M6 13l6-3.5" /></g><text class="titulo" x="672" y="357">Self-attention</text><text class="sub" x="646" y="384">con máscara · [1, 64, t, t]</text></g><g class="nodo" id="n-cruzada" data-nodo="cruzada" tabindex="0" role="button" aria-label="Atención cruzada"><rect x="864" y="330" width="178" height="76" rx="10"/><g class="icono" transform="translate(876 343)"><circle cx="4" cy="5" r="2"/><circle cx="4" cy="13" r="2"/><circle cx="14" cy="9" r="2"/><path d="M6 5l6 3.5 M6 13l6-3.5" /></g><text class="titulo" x="902" y="357">Atención cruzada</text><text class="sub" x="876" y="384">Q decoder · K, V encoder</text></g><g class="nodo" id="n-lm_head" data-nodo="lm_head" tabindex="0" role="button" aria-label="lm_head + greedy"><rect x="864" y="468" width="178" height="76" rx="10"/><g class="icono" transform="translate(876 481)"><rect x="4" y="4" width="10" height="10" rx="1"/><path d="M7 1v3 M11 1v3 M7 14v3 M11 14v3 M1 7h3 M1 11h3 M14 7h3 M14 11h3" /></g><text class="titulo" x="902" y="495">lm_head + greedy</text><text class="sub" x="876" y="522">250.112 logits · argmax</text></g><g class="nodo" id="n-posproceso" data-nodo="posproceso" tabindex="0" role="button" aria-label="Posproceso"><rect x="1109" y="468" width="180" height="76" rx="10"/><g class="icono" transform="translate(1121 481)"><path d="M2 3h14l-5 6v6l-4 2v-8z" /></g><text class="titulo" x="1147" y="495">Posproceso</text><text class="sub" x="1121" y="522">Sí/No, número o vacío</text></g><g class="nodo" id="n-tabla" data-nodo="tabla" tabindex="0" role="button" aria-label="Tabla + CSV"><rect x="1109" y="250" width="180" height="76" rx="10"/><g class="icono" transform="translate(1121 263)"><path d="M2 3h14v12H2z M2 7h14 M2 11h14 M8 3v12" /></g><text class="titulo" x="1147" y="277">Tabla + CSV</text><text class="sub" x="1121" y="304">10 variables</text></g><g class="nodo" id="n-visual" data-nodo="visual" tabindex="0" role="button" aria-label="Atención y Q, K, V"><rect x="1109" y="96" width="180" height="76" rx="10"/><g class="icono" transform="translate(1121 109)"><path d="M2 2h14v14H2z" /><rect x="4" y="4" width="4" height="4" class="relleno"/><rect x="10" y="10" width="4" height="4" class="relleno"/></g><text class="titulo" x="1147" y="123">Atención y Q, K, V</text><text class="sub" x="1121" y="150">secciones 4 y 5</text></g><circle class="punto" r="4"><animateMotion dur="1.8s" begin="0.00s" repeatCount="indefinite"><mpath href="#e_pdf"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="0.25s" repeatCount="indefinite"><mpath href="#e_texto"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="0.50s" repeatCount="indefinite"><mpath href="#e_pdf_prompt"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="0.75s" repeatCount="indefinite"><mpath href="#e_prompt"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="1.00s" repeatCount="indefinite"><mpath href="#e_ids"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="1.25s" repeatCount="indefinite"><mpath href="#e_embed"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="1.50s" repeatCount="indefinite"><mpath href="#e_enc"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="1.75s" repeatCount="indefinite"><mpath href="#e_kv"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="2.00s" repeatCount="indefinite"><mpath href="#e_dec"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="2.25s" repeatCount="indefinite"><mpath href="#e_q"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="2.50s" repeatCount="indefinite"><mpath href="#e_bloques"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="2.75s" repeatCount="indefinite"><mpath href="#e_vuelta"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="3.00s" repeatCount="indefinite"><mpath href="#e_salida"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="3.25s" repeatCount="indefinite"><mpath href="#e_valores"/></animateMotion></circle><circle class="punto" r="4"><animateMotion dur="1.8s" begin="3.50s" repeatCount="indefinite"><mpath href="#e_captura"/></animateMotion></circle></svg>
+    <figcaption>El encoder lee el prompt una sola vez. El decoder escribe la respuesta un token por paso y, en cada uno de sus 24 bloques, consulta la salida del encoder con la atención cruzada (Q del decoder; K y V del encoder).</figcaption>
+  </figure>
+  <aside class="detalle" id="detalle" aria-live="polite"></aside>
+</div>
+<p class="pie">Formas y datos verificados en <code>config.json</code> de CohereLabs/aya-101, en <code>models/t5/modeling_t5.py</code> de transformers 5.24 y en el código de este repositorio; los largos de prompt se midieron con el tokenizador de Aya-101 en las 15 historias sintéticas. <code>n</code> = tokens del prompt; <code>t</code> = tokens que lleva escritos el decoder.</p>
+</main>
+<script>
+const PASOS = [{"nodo": "historia", "flechas": [], "titulo": "Entra la historia clínica", "que": "La app recibe una historia pegada como texto, un PDF o una de las 15 historias sintéticas de ejemplo.", "archivo": "app.py", "forma": "texto", "dato": "Las 15 historias de ejemplo miden de 119 a 204 tokens."}, {"nodo": "pdf", "flechas": ["e_pdf"], "titulo": "Si es PDF, se saca el texto", "que": "PyMuPDF lee cada página del PDF y devuelve su texto. Si la entrada ya es texto, este paso no se usa.", "archivo": "src/entrada.py", "forma": "texto", "dato": "Los 15 PDF de ejemplo devuelven el mismo texto que su .txt."}, {"nodo": "prompt", "flechas": ["e_texto", "e_pdf_prompt"], "titulo": "Se arma el prompt", "que": "Instrucción en español + historia + la pregunta de una variable (10 prompts en un lote) o la lista de las 10 claves para pedir un JSON (1 prompt).", "archivo": "src/prompts.py", "forma": "texto", "dato": "Por variable: 177 a 280 tokens. JSON: 450 a 535 tokens (15 historias)."}, {"nodo": "tokens", "flechas": ["e_prompt"], "titulo": "El tokenizador parte el texto", "que": "SentencePiece de mT5 corta el prompt en subpalabras y las cambia por números (IDs), junto con una máscara que marca el relleno del lote.", "archivo": "src/inferencia.py", "forma": "[lote, n] (n = tokens del prompt)", "dato": "Vocabulario de 250.112 en config.json. En Aya-101, «7,4» es un solo token: «▁7,4» (qkv_colab.ipynb)."}, {"nodo": "embed", "flechas": ["e_ids"], "titulo": "Cada token pasa a ser un vector", "que": "Cada ID se cambia por un vector de 4096 números. T5 no suma aquí un vector de posición: la posición entra después, como un sesgo dentro de la atención.", "archivo": "transformers · modeling_t5.py", "forma": "[1, n, 4096]", "dato": "d_model = 4096 en config.json."}, {"nodo": "encoder", "flechas": ["e_embed"], "titulo": "El encoder lee todo el prompt", "que": "Cada bloque hace RMSNorm, self-attention bidireccional (Q, K y V salen del mismo prompt; 64 cabezas de 64) y una FFN gated-GELU de 4096 a 10240 y de vuelta a 4096, con conexiones residuales. Los puntajes son Q·Kᵀ + sesgo de posición, sin dividir por la raíz de d_kv.", "archivo": "modeling_t5.py · captura en src/qkv.py", "forma": "Q, K, V: [1, 64, n, 64] · puntajes: [1, 64, n, n]", "dato": "El sesgo lo calcula solo el bloque 1 (32 grupos de distancia, máximo 128) y los otros 23 lo reutilizan."}, {"nodo": "salida_enc", "flechas": ["e_enc"], "titulo": "La salida del encoder queda lista", "que": "Después del último bloque y un RMSNorm final queda un vector por token del prompt. Se calcula una sola vez y se reutiliza en cada paso del decoder.", "archivo": "src/inferencia.py", "forma": "[1, n, 4096]", "dato": "La app pasa esta salida a generate() con encoder_outputs."}, {"nodo": "entrada_dec", "flechas": [], "titulo": "El decoder empieza a escribir", "que": "El decoder arranca con el token <pad> (decoder_start_token_id = 0) y en cada paso suma el token que acaba de elegir.", "archivo": "src/inferencia.py", "forma": "[1, t] (t = tokens escritos hasta ahora)", "dato": "Termina en </s> (id 1) o al llegar a 40 tokens por variable o 200 en el JSON. En el JSON no puede repetir un grupo de 10 tokens."}, {"nodo": "self_dec", "flechas": ["e_dec"], "titulo": "Self-attention con máscara", "que": "Q, K y V salen de los tokens que ya escribió el decoder. La máscara causal impide mirar tokens futuros y el sesgo de posición es de una sola dirección.", "archivo": "modeling_t5.py · captura en src/qkv.py", "forma": "[1, 64, t, t]", "dato": "En la sección 5 de la app, los pesos de esta atención quedan en forma de triángulo."}, {"nodo": "cruzada", "flechas": ["e_q", "e_kv"], "titulo": "Atención cruzada: el decoder consulta la historia", "que": "Q sale del decoder (lo que va escribiendo); K y V salen de la salida del encoder (el prompt ya leído). Aquí el modelo decide qué parte de la historia usar para el siguiente token.", "archivo": "modeling_t5.py · mapa en la sección 4", "forma": "Q: [1, 64, t, 64] · K, V: [1, 64, n, 64] · pesos: [1, 64, t, n]", "dato": "En la atención cruzada T5 no usa sesgo de posición: es cero."}, {"nodo": "lm_head", "flechas": ["e_bloques", "e_vuelta"], "titulo": "lm_head elige el siguiente token", "que": "Tras los 24 bloques y un RMSNorm final, lm_head da un puntaje (logit) para cada token del vocabulario. Con greedy se elige el mayor y ese token vuelve a entrar al decoder.", "archivo": "src/inferencia.py (generate, greedy)", "forma": "[1, t, 4096] → [1, t, 250112]", "dato": "lm_head tiene pesos propios: no los comparte con el embedding de entrada."}, {"nodo": "posproceso", "flechas": ["e_salida"], "titulo": "El texto pasa a valores", "que": "La respuesta se convierte en «Sí», «No», un número o vacío. Si la estrategia JSON no devuelve JSON, se lee el texto entre cada clave y la siguiente.", "archivo": "src/posproceso.py", "forma": "texto → 10 valores", "dato": "En la primera prueba en Colab, Aya-101 devolvió pares «clave: valor» sin llaves."}, {"nodo": "tabla", "flechas": ["e_valores"], "titulo": "Sale la tabla", "que": "La app muestra las 10 variables, las compara con los valores esperados cuando se usa un ejemplo y permite descargar un CSV.", "archivo": "app.py · métricas en src/metricas.py", "forma": "10 filas", "dato": "La evaluación está en notebooks/evaluacion_colab.ipynb (corrida 1) y evaluacion_corrida2_colab.ipynb (corrida 2)."}, {"nodo": "visual", "flechas": ["e_captura"], "titulo": "Se puede ver por dentro", "que": "La app repite el paso del modelo para mostrar la atención cruzada (sección 4) y los tensores Q, K y V de cualquier capa (sección 5), y comprueba que su cuenta coincide con la del modelo.", "archivo": "src/inferencia.py · src/qkv.py", "forma": "pesos: [capas, t, n]", "dato": "Diferencia máxima entre la cuenta rehecha y los pesos de Aya-101 en bf16: 2,4e-2 en el encoder y 4,5e-3 en la atención cruzada (qkv_colab.ipynb)."}];
+const figura = document.getElementById("figura");
+const detalle = document.getElementById("detalle");
+const contador = document.getElementById("contador");
+let paso = -1;
+
+function escribirDetalle(p) {
+  const bloque = (titulo, valor) => `<dt>${titulo}</dt><dd>${valor}</dd>`;
+  detalle.innerHTML = `<h2>${p.titulo}</h2><p>${p.que}</p><dl>` +
+    bloque("Archivo", `<code>${p.archivo}</code>`) + bloque("Forma", `<code>${p.forma}</code>`) +
+    bloque("Dato", p.dato) + `</dl>`;
+}
+
+function mostrar(i) {
+  paso = Math.max(0, Math.min(PASOS.length - 1, i));
+  figura.classList.add("recorrido");
+  document.querySelectorAll(".nodo, .flecha").forEach(el => el.classList.remove("actual", "visto", "activa", "vista"));
+  PASOS.forEach((p, k) => {
+    if (k > paso) return;
+    const nodo = document.getElementById("n-" + p.nodo);
+    nodo.classList.add(k === paso ? "actual" : "visto");
+    p.flechas.forEach(f => document.getElementById("g-" + f).classList.add(k === paso ? "activa" : "vista"));
+  });
+  document.querySelectorAll(".flecha").forEach(g => {
+    g.querySelector("path").setAttribute("marker-end", g.classList.contains("activa") ? "url(#punta-activa)" : "url(#punta)");
+  });
+  escribirDetalle(PASOS[paso]);
+  contador.textContent = `Paso ${paso + 1} de ${PASOS.length}`;
+}
+
+function verTodo() {
+  paso = -1;
+  figura.classList.remove("recorrido");
+  document.querySelectorAll(".nodo, .flecha").forEach(el => el.classList.remove("actual", "visto", "activa", "vista"));
+  document.querySelectorAll(".flecha path").forEach(p => p.setAttribute("marker-end", "url(#punta)"));
+  detalle.innerHTML = "<h2>Elige un paso</h2><p>Haz clic en cualquier caja del diagrama o usa «Siguiente» para empezar el recorrido por el paso 1.</p>";
+  contador.textContent = `${PASOS.length} pasos`;
+}
+
+document.getElementById("siguiente").addEventListener("click", () => mostrar(paso + 1));
+document.getElementById("anterior").addEventListener("click", () => mostrar(paso <= 0 ? 0 : paso - 1));
+document.getElementById("todo").addEventListener("click", verTodo);
+document.querySelectorAll(".nodo").forEach(nodo => {
+  const ir = () => mostrar(PASOS.findIndex(p => p.nodo === nodo.dataset.nodo));
+  nodo.addEventListener("click", ir);
+  nodo.addEventListener("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); ir(); } });
+});
+document.addEventListener("keydown", ev => {
+  if (ev.target.closest && ev.target.closest("button")) return;
+  if (ev.key === "ArrowRight") mostrar(paso + 1);
+  if (ev.key === "ArrowLeft") mostrar(paso <= 0 ? 0 : paso - 1);
+});
+
+const botonAnimar = document.getElementById("animar");
+function animar(activo) {
+  figura.classList.toggle("animado", activo);
+  botonAnimar.setAttribute("aria-pressed", String(activo));
+  const svg = figura.querySelector("svg");
+  if (activo) svg.unpauseAnimations(); else svg.pauseAnimations();
+}
+botonAnimar.addEventListener("click", () => animar(botonAnimar.getAttribute("aria-pressed") !== "true"));
+// Sin animación de entrada si la persona pidió reducir el movimiento
+animar(!window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+verTodo();
+// Un enlace como diagrama_inferencia.html#paso-10 abre directamente ese paso
+const enlace = location.hash.match(/^#paso-([0-9]+)$/);
+if (enlace) mostrar(Number(enlace[1]) - 1);
+</script>
+</body>
+</html>

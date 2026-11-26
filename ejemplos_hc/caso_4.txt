@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Rosa Martínez. CC 00000003. Edad: 68 años. Sexo: femenino.
+Motivo de consulta: control de HTA y función renal.
+Antecedentes: hipertensión arterial de 12 años de evolución. Enfermedad renal crónica estadio 3b. No es diabética.
+Examen físico: TA 146/88 mmHg, peso 64 kg, talla 155 cm.
+Paraclínicos: creatinina 1,8 mg/dL, HbA1c 5,6 %.
+Tratamiento actual: enalapril 10 mg cada 12 horas y amlodipino 5 mg al día.
+Plan: control en 2 meses.

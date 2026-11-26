@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Pedro Sánchez. CC 00000009. Edad: 63 años. Sexo: masculino.
+Motivo de consulta: control de hipertensión.
+Antecedentes: hipertensión arterial. Recibió captopril hasta 2024 y se cambió por losartán por tos. Sin diabetes. Sin enfermedad renal.
+Examen físico: TA 128/82 mmHg, peso 95 kg, talla 1,80 m.
+Paraclínicos: creatinina 1,1 mg/dL.
+Tratamiento actual: losartán 50 mg cada 12 horas.
+Plan: continuar igual.

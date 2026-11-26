@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: María Gómez. CC 00000001. Edad: 55 años. Sexo: femenino.
+Motivo de consulta: cefalea ocasional y control de presión arterial.
+Antecedentes: HTA desde hace 6 años. Niega diabetes. Sin antecedente de enfermedad renal.
+Examen físico: presión arterial 152/96 mmHg, peso 82 kg, talla 1,60 m.
+Paraclínicos: creatinina 0,9 mg/dL. No se ha tomado hemoglobina glicosilada.
+Tratamiento actual: enalapril 20 mg cada 12 horas e hidroclorotiazida 25 mg al día.
+Plan: ajustar dosis y solicitar HbA1c.

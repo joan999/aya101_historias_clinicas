@@ -1,0 +1,7 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Camila Herrera. CC 00000008. Edad: 35 años. Sexo: femenino.
+Motivo de consulta: examen médico de ingreso laboral.
+Antecedentes: niega hipertensión, diabetes y enfermedad renal. No toma medicamentos.
+Examen físico: TA 112/70 mmHg, peso 58 kg, talla 1,65 m.
+Paraclínicos: creatinina 0,7 mg/dL, HbA1c 5,2 %.
+Plan: control anual.

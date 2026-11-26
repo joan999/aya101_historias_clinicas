@@ -1,0 +1,8 @@
+HISTORIA CLÍNICA SINTÉTICA. DATOS FICTICIOS.
+Paciente: Martha Rojas. CC 00000014. Edad: 71 años. Sexo: femenino.
+Motivo de consulta: control de riesgo cardiovascular.
+Antecedentes: DM tipo 2, HTA y ERC estadio 3a.
+Examen físico: TA 164/98 mmHg, FC 88 lpm, temperatura 36,5 °C, peso 88 kg, talla 1,69 m.
+Paraclínicos: glucosa en ayunas 180 mg/dL, colesterol LDL 130 mg/dL, potasio 5,1 mEq/L, creatinina 1,4 mg/dL, HbA1c 8,8 %.
+Tratamiento actual: ramipril 10 mg al día, metformina 850 mg cada 12 horas y atorvastatina 40 mg en la noche.
+Plan: ajustar antihipertensivos.
