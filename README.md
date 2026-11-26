@@ -316,7 +316,7 @@ En esta primera prueba Aya-101 devolvió pares «clave: valor» en lugar de JSON
 
 **Antes de confiar en una métrica hay que leer las respuestas.** Dos de los problemas de la corrida 1 no eran del modelo: el lector tomaba el «1» de «HbA1c» como un valor y el límite de 20 tokens cortaba respuestas que iban bien. Corregirlos subió el F1 de la estrategia por variable de 0,737 a 0,812. En cambio, el prompt Sí/No, que parecía la solución obvia para las negaciones, no ayudó.
 
-**La atención dice dónde lee el modelo, no qué va a escribir.** En la capa 23 el primer token de la respuesta mira sobre todo al valor correcto, y aun así el modelo prefiere empezar con «El». La visualización sirve para explicar un error, pero no garantiza la respuesta.
+**La atención muestra dónde lee el modelo, y la palabra que escribe se decide después.** En la capa 23 el primer token de la respuesta mira sobre todo al valor correcto, y aun así el modelo prefiere empezar con «El». La visualización sirve para explicar un error, pero no garantiza la respuesta.
 
 ### 7.2 Limitaciones
 

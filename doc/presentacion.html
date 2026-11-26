@@ -225,8 +225,8 @@ figcaption { color: var(--texto-2); font-size: 15px; margin-top: 6px; }
       <p class="gris chico">En T5, y por lo tanto en Aya-101</p>
       <p class="formula">Atención(Q, K, V) = softmax(QKᵀ + B) · V</p>
       <ul class="chico">
-        <li><b>No divide por √d<sub>k</sub></b>: en el código de transformers, <span class="mono nw">scaling = 1.0</span>.</li>
-        <li><b>B es un sesgo de posición relativa</b>: depende solo de la distancia entre dos tokens, con 32 grupos hasta una distancia de 128. Lo calcula la primera capa de cada pila y las demás lo reutilizan.</li>
+        <li>T5 <b>no divide por √d<sub>k</sub></b>; en el código de transformers, <span class="mono nw">scaling = 1.0</span>.</li>
+        <li><b>B es un sesgo de posición relativa</b> que depende solo de la distancia entre dos tokens, con 32 grupos hasta una distancia de 128. Lo calcula la primera capa de cada pila y las demás lo reutilizan.</li>
         <li>No hay vector de posición sumado al embedding, y en la atención cruzada <b>B = 0</b>.</li>
       </ul>
     </div>
@@ -342,7 +342,7 @@ Respuesta:</pre>
     </div>
   </div>
   <aside class="notas">
-    <p>≈ 0,75 min. La innovación de Aya-101 no está en la arquitectura, que es la de mT5, sino en cómo se ajustó: cuántos idiomas cubre, cómo limpiaron los datos y cómo midieron la seguridad en varios idiomas. Frente a mT0x, el mismo modelo base ajustado solo con xP3x, gana en promedio 13,1 % y 11,7 % relativo en los conjuntos de evaluación.</p>
+    <p>≈ 0,75 min. La arquitectura de Aya-101 es la de mT5. Lo nuevo está en cómo se ajustó: cubre 101 idiomas, limpiaron las plantillas de baja calidad y midieron la seguridad en varios idiomas. Frente a mT0x, el mismo modelo base ajustado solo con xP3x, gana en promedio 13,1 % y 11,7 % relativo en los conjuntos de evaluación.</p>
     <p>De T5 hereda las ideas de arquitectura: el formato texto a texto, el sesgo relativo y la normalización simplificada. Gracias al formato texto a texto y al ajuste con instrucciones, la extracción se hace solo con el texto del prompt.</p>
   </aside>
 </section>
@@ -435,9 +435,9 @@ Respuesta:</pre>
     </tbody>
   </table>
   <div class="cols" style="grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 22px; flex: none;">
-    <div class="tarjeta"><p class="chico"><b>40 tokens:</b> las 10 respuestas de HbA1c ya no se cortan. Toda la mejora del F1 sale de ahí.</p></div>
-    <div class="tarjeta"><p class="chico"><b>Prompt Sí/No:</b> cambió 2 casillas, y las dos empeoraron.</p></div>
-    <div class="tarjeta"><p class="chico"><b>JSON sin ciclos:</b> ningún valor cambia; solo baja el tiempo. Nunca hubo un JSON válido (0 de 15).</p></div>
+    <div class="tarjeta"><p class="chico">Con <b>40 tokens</b>, las 10 respuestas de HbA1c ya no se cortan, y de ahí sale toda la mejora del F1.</p></div>
+    <div class="tarjeta"><p class="chico">El <b>prompt Sí/No</b> cambió 2 casillas, y las dos empeoraron.</p></div>
+    <div class="tarjeta"><p class="chico">Con el <b>JSON sin ciclos</b> ningún valor cambia y solo baja el tiempo. Ninguna de las 15 respuestas fue un JSON válido.</p></div>
   </div>
   <aside class="notas">
     <p>≈ 1 min. Las filas resaltadas son la configuración que usa la app. Greedy es determinista: entre las dos sesiones de Colab, 137 de las 150 respuestas por variable salieron idénticas; solo cambiaron las 13 que llegaban al límite de 20 tokens.</p>
@@ -467,9 +467,9 @@ Respuesta:</pre>
     </table>
     <div style="display: grid; gap: 12px; align-content: start;">
       <div class="tarjeta destacada"><p class="chico"><b>Nunca responde «No»</b> preguntando por variable: 0 de 26. Ante «Niega diabetes» o «Sin enfermedad renal» dice «No registrado» (22) o «Sí» (4).</p></div>
-      <div class="tarjeta"><p class="chico"><b>Diastólica:</b> en 6 historias pone la sistólica y en 3 copia la presión completa («128/78»).</p></div>
-      <div class="tarjeta"><p class="chico"><b>JSON:</b> en 9 historias acierta 79 de 90 (por variable, 69 de 90 en esas mismas); en las otras 6 no escribe ninguna clave.</p></div>
-      <div class="tarjeta"><p class="chico"><b>Errores de sentido:</b> losartán suspendido, amlodipino tomado por IECA o ARA-II, irbesartán no reconocido como ARA-II.</p></div>
+      <div class="tarjeta"><p class="chico">En la <b>diastólica</b>, 6 veces pone la sistólica y 3 copia la presión completa («128/78»).</p></div>
+      <div class="tarjeta"><p class="chico">El <b>JSON</b> acierta 79 de 90 en las 9 historias donde escribe claves (por variable, 69 de 90 en esas mismas). En las otras 6 no escribe ninguna.</p></div>
+      <div class="tarjeta"><p class="chico">También hay <b>errores de sentido</b>: da por vigente un losartán suspendido, toma el amlodipino por IECA o ARA-II y no reconoce el irbesartán como ARA-II.</p></div>
     </div>
   </div>
   <aside class="notas">
@@ -494,7 +494,7 @@ Respuesta:</pre>
   </div>
   <aside class="notas">
     <p>≈ 1 min. La figura muestra cuánto mira el primer token de la respuesta al token «7,4», capa por capa (promedio de las 64 cabezas). Hasta la capa 20 casi no lo mira; en las últimas cuatro sube y en la 23 es el token más atendido.</p>
-    <p>Aun así, el modelo empieza con «El» (probabilidad 0,553) y escribe «El valor de hemoglobina glicosilada (HbA1c) en % es del 7,4 %». Con 20 tokens esa frase se cortaba antes del número: ese era el error de la corrida 1. Conclusión para la defensa: la atención muestra dónde lee el modelo, no garantiza qué va a escribir.</p>
+    <p>Aun así, el modelo empieza con «El» (probabilidad 0,553) y escribe «El valor de hemoglobina glicosilada (HbA1c) en % es del 7,4 %». Con 20 tokens esa frase se cortaba antes del número: ese era el error de la corrida 1. La atención muestra dónde lee el modelo, pero la palabra que escribe la decide lm_head con la salida de todas las capas.</p>
   </aside>
 </section>
 
@@ -522,7 +522,7 @@ Respuesta:</pre>
     </div>
   </div>
   <aside class="notas">
-    <p>≈ 0,5 min. Decir las limitaciones sin rodeos; es lo que más preguntan. Sobre el hardware: el pico de memoria deja menos de 1 GB libre en la T4. Sobre los datos: los resultados sirven para comparar configuraciones, no para afirmar cómo funcionaría en una IPS real.</p>
+    <p>≈ 0,5 min. Sobre el hardware: el pico de memoria deja menos de 1 GB libre en la T4. Sobre los datos: los resultados sirven para comparar configuraciones, no para afirmar cómo funcionaría en una IPS real.</p>
   </aside>
 </section>
 
@@ -537,7 +537,7 @@ Respuesta:</pre>
         <li>Un encoder-decoder de 13B cabe en una T4 gratuita si se cuantiza con cuidado.</li>
         <li>Sin entrenamiento, Aya-101 <b>copia bien e interpreta mal</b>.</li>
         <li>Antes de confiar en una métrica hay que leer las respuestas: el lector y el límite de tokens explicaban parte de los errores.</li>
-        <li>La atención dice dónde lee el modelo, no qué decide.</li>
+        <li>La atención muestra dónde lee el modelo; la palabra que escribe sale después, de lm_head.</li>
       </ul>
     </div>
     <div>
