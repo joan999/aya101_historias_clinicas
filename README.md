@@ -312,7 +312,7 @@ En esta primera prueba Aya-101 devolvió pares «clave: valor» en lugar de JSON
 
 **Un encoder-decoder de 13B cabe en una GPU gratuita si se cuantiza con cuidado.** Con 4 bits y cálculo en bf16, Aya-101 ocupa 13,11 GB en la T4. Los detalles cuentan: transformers deja sin cuantizar las capas `wo`, que con fp16 quedarían en fp32 y el modelo ya no cabría, y la atención por defecto (`sdpa`) no devuelve los pesos, así que para visualizarla hay que cargar el modelo con `eager`.
 
-**Sin entrenamiento, Aya-101 copia bien y interpreta mal.** Los números escritos de forma explícita salen bien en las 15 historias. Falla cuando tiene que interpretar: una negación, una presión escrita como «152/96», un medicamento suspendido o un fármaco que hay que reconocer como ARA-II.
+**Sin entrenamiento, Aya-101 copia bien e interpreta mal.** Los números escritos de forma explícita salen bien en las 15 historias. Falla cuando tiene que interpretar: una negación, una presión escrita como «152/96», un medicamento suspendido o un fármaco que hay que reconocer como ARA-II.
 
 **Antes de confiar en una métrica hay que leer las respuestas.** Dos de los problemas de la corrida 1 no eran del modelo: el lector tomaba el «1» de «HbA1c» como un valor y el límite de 20 tokens cortaba respuestas que iban bien. Corregirlos subió el F1 de la estrategia por variable de 0,737 a 0,812. En cambio, el prompt Sí/No, que parecía la solución obvia para las negaciones, no ayudó.
 
