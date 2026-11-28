@@ -306,6 +306,32 @@ La sección 5 de la app hace la misma cuenta para cualquier capa y cabeza y la c
 
 En esta primera prueba Aya-101 devolvió pares «clave: valor» en lugar de JSON y tardó 9,9 s. Con el lector corregido acertó 8 de 10 valores: no dio la presión diastólica y escribió una HbA1c de 7,0 % que la historia no tiene.
 
+Con la configuración final, la app procesa el caso 13, una nota muy abreviada («AP: HTA (+), DM2 (+), ERC (-)»), y acierta 9 de 10 valores con cada estrategia (Figura 5). Preguntando por variable falla la enfermedad renal, porque ante «ERC (-)» responde «Sí»; con JSON falta la diastólica, porque el modelo escribe «138/88» en la sistólica.
+
+![Tabla de salida del caso 13 con las dos estrategias](doc/img/tabladesalida_prototipo_presentacion.png)
+
+*Figura 5. Tabla de salida del caso 13: respuesta del modelo, valor leído con cada estrategia, valor esperado y si coincide.*
+
+**La atención cruzada muestra dónde lee el decoder.** En la respuesta JSON (Figura 6), a medida que el modelo escribe 138/88, 84, 1,71, 1,0 y 8,4, la zona de más peso avanza en diagonal por la historia, en el orden en que esos datos aparecen en ella. En la respuesta por variable sobre IECA o ARA-II (Figura 7), los tokens se apoyan sobre todo en las mismas pocas posiciones de la historia, con pesos de hasta 0,3, y al escribir «20 mg/día» aparece una diagonal tenue.
+
+![Atención cruzada de la respuesta JSON del caso 13](doc/img/atencion_cruzada_presentacion_json.png)
+
+*Figura 6. Atención cruzada de la respuesta JSON del caso 13 (promedio de cabezas). Cada fila es un token escrito y cada columna un token de la historia.*
+
+![Atención cruzada de la respuesta sobre IECA o ARA-II del caso 13](doc/img/atencion_cruzada_presentacion_prompt_cdu.png)
+
+*Figura 7. Atención cruzada de la respuesta por variable sobre IECA o ARA-II del caso 13.*
+
+La sección 5 de la app muestra las formas reales de Q, K y V para el prompt de 195 tokens de esa pregunta (Figura 8) y los mapas de puntajes, sesgo de posición y pesos de la cabeza 1 en la capa 1 del encoder (Figura 9). El sesgo depende solo de la distancia entre los dos tokens, así que dibuja franjas paralelas a la diagonal; en esta cabeza es muy negativo en la diagonal, y los puntajes copian ese dibujo.
+
+![Formas de Q, K y V en la capa 1 del encoder](doc/img/seccion_q_k_v.png)
+
+*Figura 8. Self-attention del encoder, capa 1: pasos de la cuenta y forma de cada tensor con un prompt de 195 tokens.*
+
+![Puntajes, sesgo de posición y pesos de la cabeza 1](doc/img/sesgo_presentacion.png)
+
+*Figura 9. Capa 1 del encoder, cabeza 1: puntajes antes del softmax, sesgo de posición relativa y pesos después del softmax.*
+
 ## 7. Conclusiones
 
 Este fue nuestro primer contacto con los Transformers y con el procesamiento de lenguaje natural, y salimos con una idea bastante clara: la dificultad está más en entender el concepto que en usar las herramientas. Cuando uno entiende qué hace la atención, deja de ver el modelo como una caja negra y puede aplicarlo a un problema propio sin entrenarlo desde cero.

@@ -376,18 +376,70 @@ Respuesta:</pre>
 <section class="diapo" data-titulo="Demostración">
   <p class="antetitulo">Demostración</p>
   <h2>La app en funcionamiento</h2>
-  <div class="etiquetas" style="margin: 0 0 20px;">
-    <span>1. Elegir un ejemplo o subir un PDF</span><span>2. Ejecutar la inferencia</span>
-    <span>3. Tabla y «¿coincide?»</span><span>4. Atención cruzada por capa</span><span>5. Q, K y V de una capa y cabeza</span>
-  </div>
-  <div class="cols" style="grid-template-columns: repeat(3, 1fr); gap: 18px;">
-    <div class="captura-pendiente">Captura: tabla de salida con «¿coincide?»</div>
-    <div class="captura-pendiente">Captura: mapa de atención cruzada</div>
-    <div class="captura-pendiente">Captura: sección de Q, K y V</div>
+  <figure>
+    <img src="img/tabladesalida_prototipo_presentacion.png" alt="Tabla de salida de la app para el caso 13 con las dos estrategias, el valor esperado y si coincide" style="max-height: 410px;">
+  </figure>
+  <p class="chico" style="margin-top: 12px;">Caso 13, una nota muy abreviada: <b>9 de 10 con cada estrategia</b>. Preguntando por variable falla la enfermedad renal: la nota dice «ERC (-)» y el modelo responde «Sí». Con JSON falta la diastólica, porque escribe «138/88» en la sistólica.</p>
+  <aside class="notas">
+    <p>≈ 2 min para las diapositivas 10 a 13. Si la app está arriba, mostrarla en vivo (se levanta antes con despliegue_colab.ipynb; la carga tarda de 14 a 29 minutos, así que hay que arrancar Colab unos 40 minutos antes). Si Colab no da GPU o el enlace falla, estas cuatro diapositivas son la demostración.</p>
+    <p>Pasos en la app: elegir un ejemplo o subir un PDF, ejecutar la inferencia, ver la tabla y «¿coincide?», la atención cruzada por capa y Q, K y V de una capa y cabeza.</p>
+    <p>Recorrer la tabla: respuesta cruda del modelo, valor que sale del posproceso, valor esperado y «¿coincide?». Los dos errores son los típicos del análisis por variable: la negación abreviada «ERC (-)» y la presión escrita como «X/Y».</p>
+  </aside>
+</section>
+
+<!-- 10b -->
+<section class="diapo" data-titulo="Demostración: atención cruzada">
+  <p class="antetitulo">Demostración · atención cruzada del caso 13</p>
+  <h2>Dónde mira el decoder mientras escribe</h2>
+  <div class="cols" style="grid-template-columns: 0.8fr 1.2fr; gap: 28px;">
+    <figure>
+      <img src="img/atencion_cruzada_presentacion_json.png" alt="Mapa de atención cruzada de la respuesta JSON: la zona de más peso avanza en diagonal por la historia" style="max-height: 470px;">
+      <figcaption>Un solo prompt con JSON: una fila por token escrito.</figcaption>
+    </figure>
+    <div>
+      <figure>
+        <img src="img/atencion_cruzada_presentacion_prompt_cdu.png" alt="Mapa de atención cruzada de la respuesta sobre IECA o ARA-II: todos los tokens se apoyan en las mismas pocas posiciones de la historia">
+        <figcaption>Una pregunta por variable: la respuesta sobre IECA o ARA-II.</figcaption>
+      </figure>
+      <ul class="chico" style="margin-top: 16px;">
+        <li>Con JSON, a medida que escribe 138/88, 84, 1,71, 1,0 y 8,4, la zona de más peso <b>avanza en diagonal</b> por la historia, en el orden en que esos datos aparecen en ella.</li>
+        <li>En la respuesta por variable, los tokens se apoyan sobre todo en las mismas pocas posiciones de la historia, con pesos de hasta 0,3, y al escribir «20 mg/día» aparece una diagonal tenue. En el JSON los pesos no pasan de 0,03.</li>
+      </ul>
+    </div>
   </div>
   <aside class="notas">
-    <p>≈ 2 min. Abrir la app que se levantó antes con despliegue_colab.ipynb (la carga tarda de 14 a 29 minutos: arrancar Colab unos 40 minutos antes). Sugerencia: caso 1 con «Una pregunta por variable»; mostrar la tabla, luego la atención de la HbA1c en la capa 23 y luego Q, K y V.</p>
-    <p>Si Colab no da GPU o el enlace falla, mostrar estas capturas y los notebooks ejecutados.</p>
+    <p>Cada fila es un token que escribió el decoder y cada columna un token de la historia; el color es el peso de la atención cruzada (promedio de cabezas). En la app, al pasar el cursor por una columna, se ve qué token de la historia es.</p>
+    <p>La diagonal del JSON es la mejor prueba visual de la atención cruzada: mientras escribe cada valor, el decoder consulta la parte de la historia donde está ese dato.</p>
+  </aside>
+</section>
+
+<!-- 10c -->
+<section class="diapo" data-titulo="Demostración: Q, K y V">
+  <p class="antetitulo">Demostración · sección 5 de la app</p>
+  <h2>Q, K y V de una capa, con sus formas reales</h2>
+  <figure>
+    <img src="img/seccion_q_k_v.png" alt="Tabla de la app con los pasos de la self-attention del encoder, capa 1, y la forma de cada tensor" style="max-height: 360px;">
+  </figure>
+  <p class="chico" style="margin-top: 12px;">Self-attention del encoder, capa 1, con el prompt de 195 tokens de la pregunta sobre IECA o ARA-II: X de <span class="mono nw">[1, 195, 4096]</span> pasa a Q, K y V de <span class="mono nw">[1, 64, 195, 64]</span> y los puntajes quedan en <span class="mono nw">[1, 64, 195, 195]</span>.</p>
+  <aside class="notas">
+    <p>La app captura estos tensores con ganchos (hooks) en las capas q, k y v. Se elige el tipo de atención (encoder, decoder o cruzada), la capa y la cabeza. La fila de puntajes recuerda que T5 no divide por la raíz de 64 y suma el sesgo.</p>
+  </aside>
+</section>
+
+<!-- 10d -->
+<section class="diapo" data-titulo="Demostración: sesgo de posición">
+  <p class="antetitulo">Demostración · capa 1 del encoder, cabeza 1</p>
+  <h2>El sesgo de posición relativa, visto en la app</h2>
+  <figure>
+    <img src="img/sesgo_presentacion.png" alt="Puntajes antes del softmax, sesgo de posición relativa y pesos después del softmax para la cabeza 1 de la capa 1 del encoder" style="max-height: 330px;">
+  </figure>
+  <ul class="chico" style="margin-top: 12px;">
+    <li>El sesgo (centro) depende solo de la distancia entre los dos tokens, por eso dibuja <b>franjas paralelas a la diagonal</b>.</li>
+    <li>En esta cabeza es muy negativo en la diagonal: casi no deja que un token se mire a sí mismo ni a sus vecinos. Los puntajes (izquierda) copian ese dibujo.</li>
+    <li>El softmax rehecho coincide con los pesos del modelo: diferencia máxima de 2,4e-2, por el redondeo de bf16.</li>
+  </ul>
+  <aside class="notas">
+    <p>Explicar el sesgo con esta imagen: T5 no suma un vector de posición al embedding; en cada atención suma al puntaje un número que depende de la distancia entre consulta y clave, agrupada en 32 grupos (16 por lado en el encoder, distancia máxima 128). Cada cabeza aprende sus valores. Solo la capa 1 lo calcula; las otras 23 lo reutilizan.</p>
   </aside>
 </section>
 
@@ -559,7 +611,7 @@ Respuesta:</pre>
 <!-- 17 -->
 <section class="diapo portada" data-titulo="Preguntas">
   <h1>Gracias. ¿Preguntas?</h1>
-  <p class="gris">Código, notebooks ejecutados, métricas y bitácora en el repositorio de GitHub del grupo.</p>
+  <p class="gris">Código, notebooks ejecutados y métricas en el repositorio de GitHub del grupo.</p>
   <div class="chico gris" style="margin-top: 30px;">
     <p>[1] A. Üstün et al., "Aya model: An instruction finetuned open-access multilingual language model," in <i>Proc. ACL</i>, 2024, pp. 15894–15939.</p>
     <p>[2] L. Xue et al., "mT5: A massively multilingual pre-trained text-to-text transformer," in <i>Proc. NAACL-HLT</i>, 2021, pp. 483–498.</p>
