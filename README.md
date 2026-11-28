@@ -308,32 +308,38 @@ En esta primera prueba Aya-101 devolvió pares «clave: valor» en lugar de JSON
 
 ## 7. Conclusiones
 
-### 7.1 Aprendizajes
+Este fue nuestro primer contacto con los Transformers y con el procesamiento de lenguaje natural, y salimos con una idea bastante clara: la dificultad está más en entender el concepto que en usar las herramientas. Cuando uno entiende qué hace la atención, deja de ver el modelo como una caja negra y puede aplicarlo a un problema propio sin entrenarlo desde cero.
 
-**Un encoder-decoder de 13B cabe en una GPU gratuita si se cuantiza con cuidado.** Con 4 bits y cálculo en bf16, Aya-101 ocupa 13,11 GB en la T4. Los detalles cuentan: transformers deja sin cuantizar las capas `wo`, que con fp16 quedarían en fp32 y el modelo ya no cabría, y la atención por defecto (`sdpa`) no devuelve los pesos, así que para visualizarla hay que cargar el modelo con `eager`.
+### 7.1 Lo que aprendimos
 
-**Sin entrenamiento, Aya-101 copia bien y interpreta mal.** Los números escritos de forma explícita salen bien en las 15 historias. Falla cuando tiene que interpretar: una negación, una presión escrita como «152/96», un medicamento suspendido o un fármaco que hay que reconocer como ARA-II.
-
-**Antes de confiar en una métrica hay que leer las respuestas.** Dos de los problemas de la corrida 1 no eran del modelo: el lector tomaba el «1» de «HbA1c» como un valor y el límite de 20 tokens cortaba respuestas que iban bien. Corregirlos subió el F1 de la estrategia por variable de 0,737 a 0,812. En cambio, el prompt Sí/No, que parecía la solución obvia para las negaciones, no ayudó.
-
-**La atención muestra dónde lee el modelo, y la palabra que escribe se decide después.** En la capa 23 el primer token de la respuesta mira sobre todo al valor correcto, y aun así el modelo prefiere empezar con «El». La visualización sirve para explicar un error, pero no garantiza la respuesta.
+- **De la fórmula al flujo real.** Pasamos de ver `softmax(QKᵀ/√d_k)V` en el tablero a seguirlo en el código: tokenizar, convertir a embeddings, pasar por los 24 bloques del encoder, generar token a token con el decoder y proyectar con `lm_head`. En el camino vimos que T5 no divide por √d_k y que suma un sesgo según la distancia entre tokens. Abrir la app, cambiar de capa o de cabeza, ver cómo se mueve la atención y comprobar que nuestra cuenta coincide con la del modelo fue la forma más clara de entender Q, K y V.
+- **El texto como dato secuencial.** Las historias clínicas mostraron por qué importan el orden y el contexto. El modelo lee la historia completa y devuelve datos estructurados, y copia bien los números escritos de forma explícita: sistólica, peso, creatinina y HbA1c salen bien en las 15 historias. Lo que todavía lo confunde es interpretar: una negación como «niega diabetes», un «losartán suspendido» o un fármaco que hay que reconocer como ARA-II.
+- **Un asistente «pequeño» y especializado.** Sin entrenar nada, juntamos un modelo base ya entrenado, instrucciones en español, un poco de posproceso y una interfaz, y resolvimos una tarea concreta. Es la misma idea de un asistente tipo ChatGPT, en pequeño y enfocado en 10 variables: el modelo predice el siguiente token y nosotros lo guiamos con el prompt. El resultado depende del modelo, del prompt, del posproceso y de cómo se mide.
+- **Mirar dentro de la librería.** Para sacar Q, K y V tuvimos que ubicar la atención real en `modeling_t5.py` y usar *hooks*, y eso nos obligó a entender la arquitectura por dentro.
+- **Medir y leer las respuestas.** Comparar dos estrategias y dos corridas mostró que los ajustes pequeños se notan: subir de 20 a 40 tokens llevó la HbA1c de F1 0,286 a 1,0 y el F1 global de 0,766 a 0,812. Cortar los ciclos del JSON no cambió ningún valor y bajó el tiempo de 15,0 a 11,3 s por historia. Leer las respuestas crudas también importó: el lector tomaba el «1» de «HbA1c» como un valor, y el prompt Sí/No, que parecía la solución obvia para las negaciones, no ayudó.
+- **La atención muestra dónde lee el modelo.** En la capa 23 el primer token de la respuesta mira sobre todo al valor correcto, «7,4», y aun así el modelo prefiere empezar con «El». La palabra que escribe la decide `lm_head` con la salida de todas las capas, así que la visualización sirve para explicar un error, pero no garantiza la respuesta.
+- **Ingeniería reproducible.** Con `uv`, versiones fijadas, pruebas sin GPU y cuantización en 4 bits, un modelo de 13B cupo en una T4: 13,11 GB cargado y un pico de 14,82 GB de 15,6. Los detalles contaron. Usamos bf16 porque transformers deja sin cuantizar las capas `wo`, que con fp16 quedarían en fp32 y el modelo ya no cabría, y cargamos el modelo con `eager` porque la atención por defecto (`sdpa`) no devuelve los pesos.
 
 ### 7.2 Limitaciones
 
-1. **Pocos datos, y sintéticos.** Son 15 historias escritas por nosotros, sin el formato de una IPS real. Los intervalos son anchos (el F1 del JSON va de 0,463 a 0,846) y los ajustes de la corrida 2 se eligieron sobre las mismas historias.
-2. **Negaciones.** Preguntando por variable, el modelo no respondió «No» ni una vez, y cambiar el texto del prompt no lo corrigió.
-3. **Formato de salida.** Ninguno de los 15 JSON fue válido, y en 6 historias el modelo no escribió ninguna clave.
-4. **Hardware y tiempo.** El modelo necesita una GPU de unos 15 GB: el pico de memoria deja menos de 1 GB libre en la T4, la carga tarda de 14 a 29 minutos y cada historia toma de 11 a 25 s en promedio, según la estrategia.
-5. **Largo de la entrada.** Aya-101 se ajustó con entradas de hasta 1024 tokens [1, §3.1]. Nuestros prompts miden de 177 a 535, pero una historia real completa puede ser mucho más larga.
+- **El modelo es grande y caro.** Aya-101 tiene 13B de parámetros (51,7 GB en fp32) y no cabe en el computador del grupo. Depende de una GPU T4 en 4 bits, la descarga y carga tarda de 14 a 29 minutos y cada historia toma unos 25 s preguntando por variable y 11 s con JSON. Eso pesa para usarlo de forma interactiva o con muchos documentos.
+- **Es zero-shot: no lo entrenamos con datos de la CAC.** Comete errores que un ajuste fino podría corregir. Preguntando por variable no respondió «No» ni una vez en 26 casillas, aunque la historia dijera «niega» o «sin», y cambiar el texto del prompt no lo corrigió. También pone la sistólica como diastólica o copia la presión completa «152/96» (el F1 de la diastólica es 0,40), y con JSON inventó una HbA1c de 7,0 % en dos historias que no la traían.
+- **El JSON no siempre sale bien.** El modelo devolvió JSON válido en 0 de 15 historias, y en 6 ni siquiera escribió las claves y se quedó en ciclos de «Sí, no…». El lector de respaldo que interpreta pares «clave: valor» ayuda, pero también puede tapar errores del modelo.
+- **La evaluación es pequeña y sintética.** Medimos sobre 15 historias escritas por nosotros, con valores esperados definidos por nosotros, sin datos reales de una IPS ni acuerdo entre anotadores. Los intervalos son anchos (el F1 del JSON va de 0,463 a 0,846) y los ajustes de la corrida 2 se eligieron sobre las mismas historias, así que las cifras son un indicio y no garantizan que funcione igual en otros formatos o instituciones.
+- **Largo de la entrada.** Aya-101 se ajustó con entradas de hasta 1024 tokens [1, §3.1]. Nuestros prompts miden de 177 a 535, pero una historia real completa puede ser mucho más larga.
+- **Alcance y uso responsable.** Extraemos 10 variables ilustrativas, sin el conjunto oficial de la CAC, y la entrada necesita texto o un PDF con texto (un escaneo requeriría OCR). El prototipo usa datos ficticios y no es un dispositivo médico: no debería usarse para decidir sobre pacientes sin revisión humana.
 
 ### 7.3 Posibles mejoras
 
-1. **Normalizar formatos en el posproceso**: tomar el segundo número de «X/Y» para la diastólica y pasar centímetros a metros. En la corrida 2 eso corregiría 4 casillas (3 diastólicas y 1 talla).
-2. **Fijar el comienzo del JSON**, entregándole al decoder el inicio `{"diagnostico_hta":` para que no arranque con «Sí, no.», o restringir la decodificación a una gramática JSON.
-3. **Combinar las estrategias**: usar el JSON cuando devuelve claves y preguntar por variable cuando no. En las 9 historias con claves, el JSON acertó 79 de 90 casillas y la estrategia por variable 69 de 90.
-4. **Preguntar por la negación de otra forma**, por ejemplo con una pregunta aparte sobre si la historia niega el diagnóstico, o con ejemplos resueltos dentro del prompt (*few-shot*).
-5. **Ajuste fino** con historias anotadas, por ejemplo con LoRA, si se quiere ir más allá del uso sin entrenamiento.
-6. **Evaluar con historias en el formato de una IPS** y con más casos, separando las historias que se usan para ajustar el prompt de las que se usan para medir.
+- **Ajuste fino con datos reales.** Lo que más cambiaría el resultado es hacer *fine-tuning* o *LoRA* con historias anotadas de una IPS y validarlo en un conjunto externo, midiendo también el acuerdo entre anotadores.
+- **Forzar una salida estructurada.** Entregarle al decoder el inicio `{"diagnostico_hta":` para que no arranque con «Sí, no.», usar decodificación restringida por un esquema JSON para que la respuesta siempre sea válida, o pasar de generación libre a extracción por *spans* (tipo NER o QA).
+- **Combinar las estrategias.** Usar el JSON cuando devuelve claves y preguntar por variable cuando no. En las 9 historias con claves, el JSON acertó 79 de 90 casillas y la estrategia por variable 69 de 90.
+- **Preguntar por la negación de otra forma**, con una pregunta aparte sobre si la historia niega el diagnóstico o con ejemplos resueltos dentro del prompt (*few-shot*).
+- **Normalización clínica.** Convertir centímetros a metros, tomar el segundo número de «152/96» para la diastólica, validar unidades y rangos, y combinar reglas con el modelo. En la corrida 2, las dos primeras correcciones arreglarían 4 casillas.
+- **Bajar el costo.** Probar modelos más pequeños o destilados (mT5-base, mT0), 8 bits u ONNX, guardar resultados en caché y, para lotes, usar motores como vLLM.
+- **Mejorar la interfaz y el flujo.** Procesar varias historias de una vez, añadir OCR para PDF escaneados, exportar al formato de la CAC o a FHIR, mostrar un nivel de confianza con opción de abstención y revisión humana, y desidentificar los datos.
+- **Evaluar más y mejor.** Sumar el error absoluto medio (MAE) en las variables numéricas, la calibración y la robustez ante abreviaturas y errores de digitación, con un conjunto de prueba más grande y separado de las historias que se usan para ajustar el prompt.
+- **Publicarlo como servicio.** Dejarlo en HF Spaces, una API o un contenedor Docker para que otros lo prueben sin montar Colab.
 
 ## 8. Referencias
 

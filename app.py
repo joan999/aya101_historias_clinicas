@@ -167,7 +167,8 @@ if corridas:
     cruzada = TIPOS_ATENCION[tipo_atencion][1] == 1
     pila = getattr(modelo, TIPOS_ATENCION[tipo_atencion][0]).block
     capa_qkv = d2.selectbox("Capa", range(1, len(pila) + 1), key="capa_qkv")
-    llave = (nombre, r["nombre"], tipo_atencion, capa_qkv)
+    firma = (tuple(r["ids_entrada"].tolist()), tuple(r["ids_decoder"].tolist()))
+    llave = (nombre, r["nombre"], tipo_atencion, capa_qkv, firma)
     if st.session_state.get("qkv_llave") != llave:
         with st.spinner("Capturando Q, K y V..."):
             st.session_state["qkv"] = capturar_qkv(modelo, r["ids_entrada"], r["ids_decoder"], tipo_atencion, capa_qkv - 1)
@@ -225,12 +226,15 @@ if corridas:
     plt.close(figura)
 
     # Valores reales: la última consulta y la clave a la que más atiende en esta cabeza
-    i = len(tokens_q) - 1
-    j = int(c["pesos"][0, h, i].argmax())
-    st.markdown(f"Primeros 8 de los {c['d_kv']} valores en la cabeza {cabeza}: Q de la consulta «{tokens_q[i]}» "
-                f"y K, V de la clave a la que más atiende, «{tokens_k[j]}» (peso {float(c['pesos'][0, h, i, j]):.3f}).")
-    st.dataframe(pd.DataFrame({
-        "Q": c["q_cabezas"][0, h, i, :8].numpy(),
-        "K": c["k_cabezas"][0, h, j, :8].numpy(),
-        "V": c["v_cabezas"][0, h, j, :8].numpy(),
-    }).round(4).T, hide_index=False)
+    if len(tokens_q) != c["pesos"].shape[2] or len(tokens_k) != c["pesos"].shape[3]:
+        st.warning("La captura de Q/K/V no coincide con el texto actual. Vuelve a ejecutar la inferencia.")
+    else:
+        i = len(tokens_q) - 1
+        j = int(c["pesos"][0, h, i].argmax())
+        st.markdown(f"Primeros 8 de los {c['d_kv']} valores en la cabeza {cabeza}: Q de la consulta «{tokens_q[i]}» "
+                    f"y K, V de la clave a la que más atiende, «{tokens_k[j]}» (peso {float(c['pesos'][0, h, i, j]):.3f}).")
+        st.dataframe(pd.DataFrame({
+            "Q": c["q_cabezas"][0, h, i, :8].numpy(),
+            "K": c["k_cabezas"][0, h, j, :8].numpy(),
+            "V": c["v_cabezas"][0, h, j, :8].numpy(),
+        }).round(4).T, hide_index=False)
